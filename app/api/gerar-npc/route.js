@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const MODELO = "qwen/qwen3.6-27b"; // confere o nome atual no console da Groq
+const MODELO = "qwen/qwen3.8-27b"; // confere o nome atual no console da Groq
 
 function simulado(pedido) {
   return {
@@ -64,12 +64,14 @@ export async function POST(req) {
       }),
     });
     const dados = await r.json();
+    console.log("STATUS GROQ:", r.status, JSON.stringify(dados).slice(0, 800));
     const texto = dados.choices?.[0]?.message?.content ?? "";
     const ini = texto.indexOf("{");
     const fim = texto.lastIndexOf("}");
     const bruto = JSON.parse(texto.slice(ini, fim + 1));
     return NextResponse.json({ npc: validar(bruto) });
   } catch (e) {
+    console.log("ERRO NA ROTA:", e.message);
     return NextResponse.json(
       { error: "A IA não respondeu direito. Tenta de novo." },
       { status: 502 }
