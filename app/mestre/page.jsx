@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Mapa from "../../components/Mapa";
+import Dados from "../../components/Dados";
 import { useJogo } from "../../lib/store";
 
 // manda pros jogadores só o que eles podem ver (sem PV, CA, ataques)
@@ -10,13 +11,14 @@ const publico = (lista) =>
     .map(({ id, nome, x, y, cor }) => ({ id, nome, x, y, cor, revelado: true }));
 
 export default function Mestre() {
-  const { tokens, mover, alternarRevelado, adicionar } = useJogo();
+  const { tokens, mover, alternarRevelado, adicionar, ajustarHp } = useJogo();
   const [sel, setSel] = useState(null);
   const [pedido, setPedido] = useState("");
   const [rascunho, setRascunho] = useState(null);
   const [simulado, setSimulado] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
+  const [valor, setValor] = useState("");
   const canal = useRef(null);
   const ultimos = useRef(tokens);
 
@@ -61,6 +63,7 @@ export default function Mestre() {
       nome: rascunho.nome,
       descricao: rascunho.descricao,
       hp: Number(rascunho.hp) || 1,
+      hpMax: Number(rascunho.hp) || 1,
       ca: Number(rascunho.ca) || 10,
       ataques: rascunho.ataquesTexto.split("\n").filter(Boolean),
     });
@@ -82,16 +85,42 @@ export default function Mestre() {
           onToken={setSel}
           onCelula={(x, y) => sel && mover(sel, x, y)}
         />
-        <div style={{ marginTop: 12 }}>
+        <div style={{ marginTop: 12, maxWidth: 480 }}>
           {token ? (
             <div>
               <button onClick={() => alternarRevelado(token.id)}>
                 {token.revelado ? "Ocultar" : "Revelar"} {token.nome}
               </button>
-              {token.hp && (
-                <p>
-                  <b>{token.nome}</b> — PV {token.hp} | CA {token.ca}
-                  <br />
+              {token.hp !== undefined && (
+                <div style={{ marginTop: 8 }}>
+                  <b>{token.nome}</b> — PV {token.hp}/{token.hpMax ?? token.hp} | CA {token.ca}
+                  {token.hp === 0 && <b style={{ color: "#A32D2D" }}> (caído)</b>}
+                  <div style={{ display: "flex", gap: 6, margin: "8px 0" }}>
+                    <input
+                      value={valor}
+                      onChange={(e) => setValor(e.target.value.replace(/\D/g, ""))}
+                      placeholder="valor"
+                      style={{ width: 70, padding: 4 }}
+                    />
+                    <button
+                      disabled={!valor}
+                      onClick={() => {
+                        ajustarHp(token.id, -Number(valor));
+                        setValor("");
+                      }}
+                    >
+                      Dano
+                    </button>
+                    <button
+                      disabled={!valor}
+                      onClick={() => {
+                        ajustarHp(token.id, Number(valor));
+                        setValor("");
+                      }}
+                    >
+                      Cura
+                    </button>
+                  </div>
                   {token.descricao}
                   <br />
                   {(token.ataques || []).map((a, i) => (
@@ -100,7 +129,7 @@ export default function Mestre() {
                       <br />
                     </span>
                   ))}
-                </p>
+                </div>
               )}
             </div>
           ) : (
@@ -110,7 +139,8 @@ export default function Mestre() {
       </section>
 
       <section style={{ width: 320 }}>
-        <h2>Gerar com IA</h2>
+        <Dados />
+        <h2 style={{ marginTop: 24 }}>Gerar com IA</h2>
         <input
           value={pedido}
           onChange={(e) => setPedido(e.target.value)}
