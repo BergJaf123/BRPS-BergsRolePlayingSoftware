@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Mapa from "../../components/Mapa";
 import Dados from "../../components/Dados";
 import { useJogo } from "../../lib/store";
+import { carregarCampanha, salvarCampanha } from "../../lib/db";
 
 // manda pros jogadores só o que eles podem ver (sem PV, CA, ataques)
 const publico = (lista) =>
@@ -11,7 +12,7 @@ const publico = (lista) =>
     .map(({ id, nome, x, y, cor }) => ({ id, nome, x, y, cor, revelado: true }));
 
 export default function Mestre() {
-  const { tokens, mover, alternarRevelado, adicionar, ajustarHp } = useJogo();
+  const { tokens, mover, alternarRevelado, adicionar, ajustarHp, definirTokens } = useJogo();
   const [sel, setSel] = useState(null);
   const [pedido, setPedido] = useState("");
   const [rascunho, setRascunho] = useState(null);
@@ -19,6 +20,7 @@ export default function Mestre() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
   const [valor, setValor] = useState("");
+  const [pronto, setPronto] = useState(false);
   const canal = useRef(null);
   const ultimos = useRef(tokens);
 
@@ -37,6 +39,19 @@ export default function Mestre() {
     ultimos.current = tokens;
     canal.current?.postMessage({ tipo: "estado", tokens: publico(tokens) });
   }, [tokens]);
+
+  // carrega a campanha salva ao abrir
+  useEffect(() => {
+    carregarCampanha("principal").then((c) => {
+      if (c?.tokens) definirTokens(c.tokens);
+      setPronto(true);
+    });
+  }, []);
+
+  // salva sozinho a cada mudança (só depois de carregar, pra não apagar o que já estava salvo)
+  useEffect(() => {
+    if (pronto) salvarCampanha("principal", { tokens });
+  }, [tokens, pronto]);
 
   async function gerar() {
     setErro("");
