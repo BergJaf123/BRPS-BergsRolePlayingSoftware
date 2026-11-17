@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Mapa from "../../components/Mapa";
 import Dados from "../../components/Dados";
+import PainelMapa from "../../components/PainelMapa";
 import { useJogo } from "../../lib/store";
 import { carregarCampanha, salvarCampanha } from "../../lib/db";
 import { lerImagem } from "../../lib/imagem";
@@ -13,7 +14,10 @@ const publico = (lista) =>
     .map(({ id, nome, x, y, cor, imagem }) => ({ id, nome, x, y, cor, imagem, revelado: true }));
 
 export default function Mestre() {
-  const { tokens, mover, alternarRevelado, adicionar, ajustarHp, definirTokens, definirImagem } = useJogo();
+  const {
+    tokens, mapa, mover, alternarRevelado, adicionar, ajustarHp,
+    definirEstado, definirImagem, definirMapa,
+  } = useJogo();
   const [sel, setSel] = useState(null);
   const [pedido, setPedido] = useState("");
   const [rascunho, setRascunho] = useState(null);
@@ -21,39 +25,45 @@ export default function Mestre() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
   const [valor, setValor] = useState("");
-  const [pronto, setPronto] = useState(false);
   const [erroImg, setErroImg] = useState("");
+  const [pronto, setPronto] = useState(false);
   const canal = useRef(null);
-  const ultimos = useRef(tokens);
+  const ultimos = useRef({ tokens, mapa });
+
+  function enviar() {
+    canal.current?.postMessage({
+      tipo: "estado",
+      tokens: publico(ultimos.current.tokens),
+      mapa: ultimos.current.mapa,
+    });
+  }
 
   useEffect(() => {
     const c = new BroadcastChannel("brps-mesa");
     canal.current = c;
     c.onmessage = (e) => {
-      if (e.data.tipo === "pedir") {
-        c.postMessage({ tipo: "estado", tokens: publico(ultimos.current) });
-      }
+      if (e.data.tipo === "pedir") enviar();
     };
     return () => c.close();
   }, []);
 
   useEffect(() => {
-    ultimos.current = tokens;
-    canal.current?.postMessage({ tipo: "estado", tokens: publico(tokens) });
-  }, [tokens]);
+    ultimos.current = { tokens, mapa };
+    enviar();
+  }, [tokens, mapa]);
 
   // carrega a campanha salva ao abrir
   useEffect(() => {
     carregarCampanha("principal").then((c) => {
-      if (c?.tokens) definirTokens(c.tokens);
+      if (c) definirEstado(c);
       setPronto(true);
     });
   }, []);
 
-  // salva sozinho a cada mudança (só depois de carregar, pra não apagar o que já estava salvo)
+  // salva sozinho a cada mudança (só depois de carregar)
   useEffect(() => {
-    if (pronto) salvarCampanha("principal", { tokens });
-  }, [tokens, pronto]);
+    if (pronto) salvarCampanha("principal", { tokens, mapa });
+  }, [tokens, mapa, pronto]);
 
   async function gerar() {
     setErro("");
@@ -98,6 +108,9 @@ export default function Mestre() {
         <p>Clica num token pra selecionar e numa casa pra mover.</p>
         <Mapa
           tokens={tokens}
+          colunas={mapa.colunas}
+          linhas={mapa.linhas}
+          mascara={mapa.mascara}
           selecionado={sel}
           onToken={setSel}
           onCelula={(x, y) => sel && mover(sel, x, y)}
@@ -183,7 +196,10 @@ export default function Mestre() {
       </section>
 
       <section style={{ width: 320 }}>
-        <Dados />
+        <PainelMapa mapa={mapa} onAplicar={definirMapa} />
+        <div style={{ marginTop: 16 }}>
+          <Dados />
+        </div>
         <h2 style={{ marginTop: 24 }}>Gerar com IA</h2>
         <input
           value={pedido}
