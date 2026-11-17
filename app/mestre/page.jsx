@@ -4,15 +4,16 @@ import Mapa from "../../components/Mapa";
 import Dados from "../../components/Dados";
 import { useJogo } from "../../lib/store";
 import { carregarCampanha, salvarCampanha } from "../../lib/db";
+import { lerImagem } from "../../lib/imagem";
 
 // manda pros jogadores só o que eles podem ver (sem PV, CA, ataques)
 const publico = (lista) =>
   lista
     .filter((t) => t.revelado)
-    .map(({ id, nome, x, y, cor }) => ({ id, nome, x, y, cor, revelado: true }));
+    .map(({ id, nome, x, y, cor, imagem }) => ({ id, nome, x, y, cor, imagem, revelado: true }));
 
 export default function Mestre() {
-  const { tokens, mover, alternarRevelado, adicionar, ajustarHp, definirTokens } = useJogo();
+  const { tokens, mover, alternarRevelado, adicionar, ajustarHp, definirTokens, definirImagem } = useJogo();
   const [sel, setSel] = useState(null);
   const [pedido, setPedido] = useState("");
   const [rascunho, setRascunho] = useState(null);
@@ -21,6 +22,7 @@ export default function Mestre() {
   const [erro, setErro] = useState("");
   const [valor, setValor] = useState("");
   const [pronto, setPronto] = useState(false);
+  const [erroImg, setErroImg] = useState("");
   const canal = useRef(null);
   const ultimos = useRef(tokens);
 
@@ -106,6 +108,33 @@ export default function Mestre() {
               <button onClick={() => alternarRevelado(token.id)}>
                 {token.revelado ? "Ocultar" : "Revelar"} {token.nome}
               </button>
+              <div style={{ margin: "8px 0", display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <label style={{ cursor: "pointer", border: "1px solid #888", borderRadius: 4, padding: "2px 8px", fontSize: 13 }}>
+                  Escolher imagem
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={async (e) => {
+                      const arq = e.target.files[0];
+                      e.target.value = "";
+                      if (!arq) return;
+                      try {
+                        setErroImg("");
+                        definirImagem(token.id, await lerImagem(arq));
+                      } catch (err) {
+                        setErroImg(err.message);
+                      }
+                    }}
+                  />
+                </label>
+                {token.imagem && (
+                  <button style={{ fontSize: 13 }} onClick={() => definirImagem(token.id, null)}>
+                    Remover imagem
+                  </button>
+                )}
+                {erroImg && <span style={{ color: "#A32D2D", fontSize: 13 }}>{erroImg}</span>}
+              </div>
               {token.hp !== undefined && (
                 <div style={{ marginTop: 8 }}>
                   <b>{token.nome}</b> — PV {token.hp}/{token.hpMax ?? token.hp} | CA {token.ca}

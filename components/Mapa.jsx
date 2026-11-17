@@ -1,5 +1,5 @@
-'use client';
-import { useState } from 'react';
+"use client";
+import { useState } from "react";
 
 export default function Mapa({
   tokens,
@@ -17,16 +17,16 @@ export default function Mapa({
   return (
     <div
       style={{
-        position: 'relative',
+        position: "relative",
         width: colunas * tamanho,
         height: linhas * tamanho,
-        background: '#F1EFE8',
-        border: '3px solid #444441',
+        background: "#F1EFE8",
+        border: "3px solid #444441",
       }}
     >
       <div
         style={{
-          display: 'grid',
+          display: "grid",
           gridTemplateColumns: `repeat(${colunas}, ${tamanho}px)`,
         }}
       >
@@ -44,14 +44,14 @@ export default function Mapa({
               style={{
                 width: tamanho,
                 height: tamanho,
-                boxSizing: 'border-box',
-                border: '0.5px solid #B4B2A9',
+                boxSizing: "border-box",
+                border: "0.5px solid #B4B2A9",
                 background: ehHover
-                  ? '#B5D4F4'
+                  ? "#B5D4F4"
                   : ehSel
-                  ? '#FAC775'
-                  : 'transparent',
-                cursor: interativo && selecionado ? 'pointer' : 'default',
+                  ? "#FAC775"
+                  : "transparent",
+                cursor: interativo && selecionado ? "pointer" : "default",
               }}
             />
           );
@@ -67,17 +67,20 @@ export default function Mapa({
             onToken && onToken(t.id);
           }}
           style={{
-            position: 'absolute',
+            position: "absolute",
             left: t.x * tamanho + 4,
             top: t.y * tamanho + 4,
             width: tamanho - 8,
             height: tamanho - 8,
-            borderRadius: '50%',
-            background: t.cor,
+            borderRadius: "50%",
+            backgroundColor: t.cor,
+            backgroundImage: t.imagem ? `url(${t.imagem})` : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             opacity: t.revelado ? 1 : 0.45,
-            border:
-              selecionado === t.id ? '3px solid #000' : '2px solid #2C2C2A',
-            cursor: onToken ? 'pointer' : 'default',
+            border: selecionado === t.id ? "3px solid #000" : `2px solid ${t.imagem ? t.cor : "#2C2C2A"}`,
+            boxSizing: "border-box",
+            cursor: onToken ? "pointer" : "default",
           }}
         />
       ))}
