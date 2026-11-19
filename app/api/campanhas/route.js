@@ -3,6 +3,7 @@ import { getSql } from "../../../lib/sql";
 import { gerarHash } from "../../../lib/codigo";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 // lista as campanhas (JOIN com as salas + contagem)
 export async function GET() {
