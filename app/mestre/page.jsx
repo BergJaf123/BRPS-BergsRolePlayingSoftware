@@ -129,9 +129,9 @@ export default function Mestre() {
         <h1>Mestre</h1>
         <p>
           <Link href="/">Campanhas</Link> ·{" "}
-          <a href={`/tela?campanha=${campanha}`} target="_blank" rel="noreferrer">
+          <Link href={`/tela?campanha=${campanha}`} target="_blank" rel="noreferrer">
             Abrir tela dos jogadores
-          </a>{" "}
+          </Link>{" "}
           ·{" "}
           <span role="status">
             {status === "salvando" ? "Salvando..." : status === "salvo" ? "Salvo no banco" : status}
