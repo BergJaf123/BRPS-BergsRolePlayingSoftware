@@ -1,32 +1,69 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Mapa from "../../components/Mapa";
+import { lerEstadoPublico } from "../../lib/api";
 
 export default function Tela() {
-  const [tokens, setTokens] = useState([]);
-  const [mapa, setMapa] = useState({ colunas: 12, linhas: 8, mascara: null });
+  const [campanha, setCampanha] = useState(null);
+  const [estado, setEstado] = useState(null);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    const c = new BroadcastChannel("brps-mesa");
-    c.onmessage = (e) => {
-      if (e.data.tipo === "estado") {
-        setTokens(e.data.tokens);
-        if (e.data.mapa) setMapa(e.data.mapa);
-      }
-    };
-    c.postMessage({ tipo: "pedir" });
-    return () => c.close();
+    const id = new URLSearchParams(window.location.search).get("campanha");
+    setCampanha(/^\d{1,15}$/.test(id ?? "") ? id : "");
   }, []);
+
+  useEffect(() => {
+    if (!campanha) return;
+    let vivo = true;
+    async function buscar() {
+      try {
+        const d = await lerEstadoPublico(campanha);
+        if (vivo) {
+          setEstado(d);
+          setErro("");
+        }
+      } catch (e) {
+        if (vivo) setErro(e.message);
+      }
+    }
+    buscar();
+    const t = setInterval(buscar, 2000);
+    return () => {
+      vivo = false;
+      clearInterval(t);
+    };
+  }, [campanha]);
+
+  if (campanha === null) return <p>Carregando...</p>;
+  if (campanha === "") {
+    return (
+      <main>
+        <h1>Jogadores</h1>
+        <p>Nenhuma campanha escolhida.</p>
+        <Link href="/">Ver as campanhas</Link>
+      </main>
+    );
+  }
 
   return (
     <main>
       <h1>Jogadores</h1>
-      <Mapa
-        tokens={tokens}
-        colunas={mapa.colunas}
-        linhas={mapa.linhas}
-        mascara={mapa.mascara}
-      />
+      {erro && (
+        <p role="alert" style={{ color: "#A32D2D" }}>
+          {estado ? "Reconectando..." : erro}
+        </p>
+      )}
+      {!estado && !erro && <p>Carregando...</p>}
+      {estado && (
+        <Mapa
+          tokens={estado.tokens}
+          colunas={estado.mapa.colunas}
+          linhas={estado.mapa.linhas}
+          mascara={estado.mapa.mascara}
+        />
+      )}
     </main>
   );
 }

@@ -1,23 +1,22 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import Mapa from "../../components/Mapa";
 import Dados from "../../components/Dados";
 import PainelMapa from "../../components/PainelMapa";
+import Acesso from "../../components/Acesso";
 import { useJogo } from "../../lib/store";
-import { carregarCampanha, salvarCampanha } from "../../lib/db";
+import { abrirCampanha, salvarCampanha } from "../../lib/api";
 import { lerImagem } from "../../lib/imagem";
-
-// manda pros jogadores só o que eles podem ver (sem PV, CA, ataques)
-const publico = (lista) =>
-  lista
-    .filter((t) => t.revelado)
-    .map(({ id, nome, x, y, cor, imagem }) => ({ id, nome, x, y, cor, imagem, revelado: true }));
 
 export default function Mestre() {
   const {
     tokens, mapa, mover, alternarRevelado, adicionar, ajustarHp,
     definirEstado, definirImagem, definirMapa,
   } = useJogo();
+  const [campanha, setCampanha] = useState(null);
+  const [codigo, setCodigo] = useState(null);
+  const [status, setStatus] = useState("");
   const [sel, setSel] = useState(null);
   const [pedido, setPedido] = useState("");
   const [rascunho, setRascunho] = useState(null);
@@ -26,44 +25,38 @@ export default function Mestre() {
   const [erro, setErro] = useState("");
   const [valor, setValor] = useState("");
   const [erroImg, setErroImg] = useState("");
-  const [pronto, setPronto] = useState(false);
-  const canal = useRef(null);
-  const ultimos = useRef({ tokens, mapa });
+  const [novoNome, setNovoNome] = useState("");
+  const ultimo = useRef("");
 
-  function enviar() {
-    canal.current?.postMessage({
-      tipo: "estado",
-      tokens: publico(ultimos.current.tokens),
-      mapa: ultimos.current.mapa,
-    });
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("campanha");
+    setCampanha(/^\d{1,15}$/.test(id ?? "") ? id : "");
+  }, []);
+
+  async function entrar(cod) {
+    const estado = await abrirCampanha(campanha, cod);
+    definirEstado(estado);
+    ultimo.current = JSON.stringify({ tokens: estado.tokens, mapa: estado.mapa });
+    setCodigo(cod);
   }
 
+  // salva no banco 0,8 s depois da última mudança
   useEffect(() => {
-    const c = new BroadcastChannel("brps-mesa");
-    canal.current = c;
-    c.onmessage = (e) => {
-      if (e.data.tipo === "pedir") enviar();
-    };
-    return () => c.close();
-  }, []);
-
-  useEffect(() => {
-    ultimos.current = { tokens, mapa };
-    enviar();
-  }, [tokens, mapa]);
-
-  // carrega a campanha salva ao abrir
-  useEffect(() => {
-    carregarCampanha("principal").then((c) => {
-      if (c) definirEstado(c);
-      setPronto(true);
-    });
-  }, []);
-
-  // salva sozinho a cada mudança (só depois de carregar)
-  useEffect(() => {
-    if (pronto) salvarCampanha("principal", { tokens, mapa });
-  }, [tokens, mapa, pronto]);
+    if (!codigo) return;
+    const agora = JSON.stringify({ tokens, mapa });
+    if (agora === ultimo.current) return;
+    setStatus("salvando");
+    const t = setTimeout(async () => {
+      try {
+        await salvarCampanha(campanha, codigo, { tokens, mapa });
+        ultimo.current = agora;
+        setStatus("salvo");
+      } catch (e) {
+        setStatus("Erro ao salvar: " + e.message);
+      }
+    }, 800);
+    return () => clearTimeout(t);
+  }, [tokens, mapa, codigo, campanha]);
 
   async function gerar() {
     setErro("");
@@ -98,13 +91,52 @@ export default function Mestre() {
     setPedido("");
   }
 
+  function novoPersonagem() {
+    const nome = novoNome.trim();
+    if (!nome) return;
+    adicionar({ nome: nome.slice(0, 80), cor: "#378ADD", revelado: true });
+    setNovoNome("");
+  }
+
   const campo = (k) => (e) => setRascunho({ ...rascunho, [k]: e.target.value });
   const token = tokens.find((t) => t.id === sel);
+
+  if (campanha === null) return <p>Carregando...</p>;
+  if (campanha === "") {
+    return (
+      <main>
+        <h1>Mestre</h1>
+        <p>Nenhuma campanha escolhida.</p>
+        <Link href="/">Voltar para as campanhas</Link>
+      </main>
+    );
+  }
+  if (!codigo) {
+    return (
+      <main>
+        <h1>Mestre</h1>
+        <Acesso onEntrar={entrar} />
+        <p>
+          <Link href="/">Voltar para as campanhas</Link>
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
       <section>
         <h1>Mestre</h1>
+        <p>
+          <Link href="/">Campanhas</Link> ·{" "}
+          <a href={`/tela?campanha=${campanha}`} target="_blank" rel="noreferrer">
+            Abrir tela dos jogadores
+          </a>{" "}
+          ·{" "}
+          <span role="status">
+            {status === "salvando" ? "Salvando..." : status === "salvo" ? "Salvo no banco" : status}
+          </span>
+        </p>
         <p>Clica num token pra selecionar e numa casa pra mover.</p>
         <Mapa
           tokens={tokens}
@@ -200,31 +232,40 @@ export default function Mestre() {
         <div style={{ marginTop: 16 }}>
           <Dados />
         </div>
+
+        <h2 style={{ marginTop: 24 }}>Personagem</h2>
+        <div style={{ display: "flex", gap: 6 }}>
+          <input
+            value={novoNome}
+            onChange={(e) => setNovoNome(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && novoPersonagem()}
+            placeholder="nome do personagem"
+            aria-label="Nome do personagem"
+            style={{ flex: 1, padding: 6, minWidth: 0 }}
+          />
+          <button onClick={novoPersonagem} disabled={!novoNome.trim()}>
+            Adicionar
+          </button>
+        </div>
+
         <h2 style={{ marginTop: 24 }}>Gerar com IA</h2>
+        <p style={{ fontSize: 12, margin: "0 0 6px" }}>
+          A IA pode errar. Revise o rascunho antes de aprovar.
+        </p>
         <input
           value={pedido}
           onChange={(e) => setPedido(e.target.value)}
           placeholder="ex: goblin xamã nível 3"
+          aria-label="Pedido para a IA"
           style={{ width: "100%", boxSizing: "border-box", padding: 6 }}
         />
-        <button
-          onClick={gerar}
-          disabled={carregando || !pedido.trim()}
-          style={{ marginTop: 8 }}
-        >
+        <button onClick={gerar} disabled={carregando || !pedido.trim()} style={{ marginTop: 8 }}>
           {carregando ? "Gerando..." : "Gerar rascunho"}
         </button>
         {erro && <p style={{ color: "#A32D2D" }}>{erro}</p>}
 
         {rascunho && (
-          <div
-            style={{
-              marginTop: 12,
-              border: "1px solid #888",
-              borderRadius: 8,
-              padding: 10,
-            }}
-          >
+          <div style={{ marginTop: 12, border: "1px solid #888", borderRadius: 8, padding: 10 }}>
             {simulado && <p style={{ fontSize: 12 }}>Modo simulado (sem chave da IA).</p>}
             <label>
               Nome

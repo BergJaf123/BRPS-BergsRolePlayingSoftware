@@ -57,6 +57,7 @@ export async function PUT(req, { params }) {
     if (auth !== "ok") return recusar(auth);
 
     const gravou = await sql.begin(async (tx) => {
+      await tx`SET LOCAL lock_timeout = '5s'`;
       const [sala] = await tx`
         SELECT id FROM salas
         WHERE campanha_id = ${id} AND ativa = TRUE
