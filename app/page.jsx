@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ExcluirCampanha from "../components/ExcluirCampanha";
 
 export default function Home() {
   const [campanhas, setCampanhas] = useState(null);
@@ -92,7 +93,10 @@ export default function Home() {
                     {new Date(c.criado_em).toLocaleDateString("pt-BR")}
                   </small>
                 </span>
-                <Link href={`/mestre?campanha=${c.id}`}>Abrir</Link>
+                <span style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                  <Link href={`/mestre?campanha=${c.id}`}>Abrir</Link>
+                  <ExcluirCampanha id={c.id} nome={c.nome} onExcluida={carregar} />
+                </span>
               </li>
             ))}
           </ul>
