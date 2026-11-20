@@ -27,6 +27,7 @@ export default function Mestre() {
   const [erroImg, setErroImg] = useState("");
   const [novoNome, setNovoNome] = useState("");
   const ultimo = useRef("");
+  const filaSalvamento = useRef(Promise.resolve());
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("campanha");
@@ -44,18 +45,29 @@ export default function Mestre() {
   useEffect(() => {
     if (!codigo) return;
     const agora = JSON.stringify({ tokens, mapa });
-    if (agora === ultimo.current) return;
-    setStatus("salvando");
-    const t = setTimeout(async () => {
-      try {
-        await salvarCampanha(campanha, codigo, { tokens, mapa });
-        ultimo.current = agora;
-        setStatus("salvo");
-      } catch (e) {
-        setStatus("Erro ao salvar: " + e.message);
-      }
+    let ativo = true;
+    const t = setTimeout(() => {
+      filaSalvamento.current = filaSalvamento.current.then(async () => {
+        if (!ativo) return;
+        if (agora === ultimo.current) {
+          setStatus((atual) => atual ? "salvo" : "");
+          return;
+        }
+
+        setStatus("salvando");
+        try {
+          await salvarCampanha(campanha, codigo, { tokens, mapa });
+          ultimo.current = agora;
+          if (ativo) setStatus("salvo");
+        } catch (e) {
+          if (ativo) setStatus("Erro ao salvar: " + e.message);
+        }
+      });
     }, 800);
-    return () => clearTimeout(t);
+    return () => {
+      ativo = false;
+      clearTimeout(t);
+    };
   }, [tokens, mapa, codigo, campanha]);
 
   async function gerar() {
