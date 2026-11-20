@@ -17,6 +17,7 @@ export default function Tela() {
   useEffect(() => {
     if (!campanha) return;
     let vivo = true;
+    let t;
     async function buscar() {
       try {
         const d = await lerEstadoPublico(campanha);
@@ -26,13 +27,14 @@ export default function Tela() {
         }
       } catch (e) {
         if (vivo) setErro(e.message);
+      } finally {
+        if (vivo) t = setTimeout(buscar, 2000);
       }
     }
     buscar();
-    const t = setInterval(buscar, 2000);
     return () => {
       vivo = false;
-      clearInterval(t);
+      clearTimeout(t);
     };
   }, [campanha]);
 
