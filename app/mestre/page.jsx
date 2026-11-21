@@ -4,6 +4,7 @@ import Link from "next/link";
 import Mapa from "../../components/Mapa";
 import Dados from "../../components/Dados";
 import PainelMapa from "../../components/PainelMapa";
+import PainelSala from "../../components/PainelSala";
 import Acesso from "../../components/Acesso";
 import { useJogo } from "../../lib/store";
 import { abrirCampanha, salvarCampanha } from "../../lib/api";
@@ -12,7 +13,7 @@ import { lerImagem } from "../../lib/imagem";
 export default function Mestre() {
   const {
     tokens, mapa, mover, alternarRevelado, adicionar, ajustarHp,
-    definirEstado, definirImagem, definirMapa,
+    definirEstado, definirImagem, definirMapa, sala, definirSala,
   } = useJogo();
   const [campanha, setCampanha] = useState(null);
   const [codigo, setCodigo] = useState(null);
@@ -36,19 +37,19 @@ export default function Mestre() {
   async function entrar(cod) {
     const estado = await abrirCampanha(campanha, cod);
     definirEstado(estado);
-    ultimo.current = JSON.stringify({ tokens: estado.tokens, mapa: estado.mapa });
+    ultimo.current = JSON.stringify({ tokens: estado.tokens, mapa: estado.mapa, sala: estado.sala });
     setCodigo(cod);
   }
 
   // salva no banco 0,8 s depois da última mudança
   useEffect(() => {
     if (!codigo) return;
-    const agora = JSON.stringify({ tokens, mapa });
+    const agora = JSON.stringify({ tokens, mapa, sala });
     if (agora === ultimo.current) return;
     setStatus("salvando");
     const t = setTimeout(async () => {
       try {
-        await salvarCampanha(campanha, codigo, { tokens, mapa });
+        await salvarCampanha(campanha, codigo, { tokens, mapa, sala });
         ultimo.current = agora;
         setStatus("salvo");
       } catch (e) {
@@ -56,7 +57,7 @@ export default function Mestre() {
       }
     }, 800);
     return () => clearTimeout(t);
-  }, [tokens, mapa, codigo, campanha]);
+  }, [tokens, mapa, sala, codigo, campanha]);
 
   async function gerar() {
     setErro("");
@@ -229,6 +230,7 @@ export default function Mestre() {
 
       <section style={{ width: 320 }}>
         <PainelMapa mapa={mapa} onAplicar={definirMapa} />
+        <PainelSala sala={sala} onChange={definirSala} />
         <div style={{ marginTop: 16 }}>
           <Dados />
         </div>

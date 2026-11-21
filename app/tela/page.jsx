@@ -4,10 +4,31 @@ import Link from "next/link";
 import Mapa from "../../components/Mapa";
 import { lerEstadoPublico } from "../../lib/api";
 
+const oculto = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+};
+
+function useJanela() {
+  const [t, setT] = useState({ w: 1024, h: 768 });
+  useEffect(() => {
+    const ler = () => setT({ w: window.innerWidth, h: window.innerHeight });
+    ler();
+    window.addEventListener("resize", ler);
+    return () => window.removeEventListener("resize", ler);
+  }, []);
+  return t;
+}
+
 export default function Tela() {
   const [campanha, setCampanha] = useState(null);
   const [estado, setEstado] = useState(null);
   const [erro, setErro] = useState("");
+  const janela = useJanela();
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("campanha");
@@ -47,22 +68,66 @@ export default function Tela() {
     );
   }
 
+  const imagem = estado?.sala?.imagem;
+  const largo = janela.w >= 900;
+  const GAP = 12;
+  const disponivelW = janela.w - 32;
+  const disponivelH = janela.h - 32;
+
+  let mapaW = disponivelW;
+  let mapaH = disponivelH;
+  if (imagem && largo) mapaW = Math.floor((disponivelW - GAP) * 0.68);
+  if (imagem && !largo) mapaH = Math.floor((disponivelH - GAP) * 0.62);
+
+  const colunas = estado?.mapa.colunas ?? 12;
+  const linhas = estado?.mapa.linhas ?? 8;
+  const tam = Math.max(16, Math.floor(Math.min((mapaW - 6) / colunas, (mapaH - 6) / linhas)));
+
   return (
-    <main>
-      <h1>Jogadores</h1>
+    <main
+      style={{
+        display: "flex",
+        flexDirection: imagem && largo ? "row" : "column",
+        gap: GAP,
+        alignItems: "flex-start",
+        justifyContent: "center",
+      }}
+    >
+      <h1 style={oculto}>Tela dos jogadores</h1>
       {erro && (
-        <p role="alert" style={{ color: "#A32D2D" }}>
+        <p role="alert" style={{ color: "#A32D2D", margin: 0 }}>
           {estado ? "Reconectando..." : erro}
         </p>
       )}
       {!estado && !erro && <p>Carregando...</p>}
       {estado && (
-        <Mapa
-          tokens={estado.tokens}
-          colunas={estado.mapa.colunas}
-          linhas={estado.mapa.linhas}
-          mascara={estado.mapa.mascara}
-        />
+        <>
+          <Mapa
+            tokens={estado.tokens}
+            colunas={colunas}
+            linhas={linhas}
+            mascara={estado.mapa.mascara}
+            tamanho={tam}
+          />
+          {imagem && (
+            <div
+              role="img"
+              aria-label="Imagem da sala"
+              style={{
+                flex: largo ? "1 1 0" : "none",
+                minWidth: 0,
+                width: largo ? undefined : "100%",
+                height: largo ? linhas * tam + 6 : Math.floor((disponivelH - GAP) * 0.34),
+                backgroundImage: `url(${imagem})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                borderRadius: 8,
+                border: "3px solid #444441",
+                boxSizing: "border-box",
+              }}
+            />
+          )}
+        </>
       )}
     </main>
   );
