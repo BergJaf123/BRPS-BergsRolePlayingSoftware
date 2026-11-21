@@ -67,7 +67,8 @@ export async function PUT(req, { params }) {
       await tx`
         UPDATE salas
         SET colunas = ${dados.colunas}, linhas = ${dados.linhas},
-            mascara = ${dados.mascara === null ? null : tx.json(dados.mascara)}
+            mascara = ${dados.mascara === null ? null : tx.json(dados.mascara)},
+            imagem = ${dados.imagem}, imagem_visivel = ${dados.imagemVisivel}
         WHERE id = ${sala.id}
       `;
       await tx`DELETE FROM tokens WHERE sala_id = ${sala.id}`;
