@@ -28,7 +28,7 @@ export default function ExcluirCampanha({ id, nome, onExcluida }) {
   return (
     <form onSubmit={confirmar} style={{ width: "100%" }}>
       <label htmlFor={`cod-${id}`}>
-        Código do mestre para excluir "{nome}" (isso apaga as salas e os tokens)
+        Código do mestre para excluir &quot;{nome}&quot; (isso apaga as salas e os tokens)
       </label>
       <br />
       <input
