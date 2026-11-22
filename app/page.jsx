@@ -54,7 +54,7 @@ export default function Home() {
 
   return (
     <main className="pagina">
-      <header className="cabecalho">
+      <header className="cabecalho cabecalho-campanhas">
         <div>
           <h1>BRPS</h1>
           <p className="texto-suave">Mesa virtual de RPG com IA para o mestre.</p>
