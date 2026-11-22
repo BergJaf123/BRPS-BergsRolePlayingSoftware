@@ -1,8 +1,59 @@
-<!-- Layered Peaks, gerado no Haikei e adaptado à paleta do BRPS. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 300 900 300" preserveAspectRatio="none">
-  <path fill="#395b53" d="M0 448L129 356L257 359L386 402L514 442L643 390L771 423L900 390V601H0Z"/>
-  <path fill="#315048" d="M0 438L129 471L257 471L386 435L514 473L643 412L771 459L900 445V601H0Z"/>
-  <path fill="#2b4944" d="M0 464L129 447L257 457L386 498L514 447L643 444L771 491L900 510V601H0Z"/>
-  <path fill="#223c39" d="M0 536L129 501L257 501L386 532L514 534L643 499L771 505L900 537V601H0Z"/>
-  <path fill="#1b302e" d="M0 527L129 554L257 551L386 540L514 547L643 544L771 559L900 570V601H0Z"/>
+<!-- Relevo Layered Peaks do Haikei. Composição e ilustração para o BRPS. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 120 900 480">
+  <defs>
+    <linearGradient id="bruma">
+      <stop stop-color="black"/>
+      <stop offset=".20" stop-color="white"/>
+    </linearGradient>
+    <mask id="borda"><path fill="url(#bruma)" d="M0 120h900v480H0z"/></mask>
+    <linearGradient id="luar" x2=".27" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#ffe9af"/>
+      <stop offset="1" stop-color="#d3a464"/>
+    </linearGradient>
+    <pattern id="gravura" width="6" height="6" patternUnits="userSpaceOnUse">
+      <path d="M0 5.5h6" stroke="#777041" stroke-width=".65" opacity=".58"/>
+    </pattern>
+    <g id="estrela" fill="#e8cf94"><path d="m0 -6 1.4 4.6L6 0 1.4 1.4 0 6-1.4 1.4-6 0l4.6-1.4Z"/></g>
+    <path id="pinheiro" d="m0 0-4 10h2l-5 9h3l-6 10h8v4h4v-4h8l-6-10h3l-5-9h2Z"/>
+  </defs>
+  <g mask="url(#borda)">
+    <g stroke="#bfab7b" fill="none">
+      <circle cx="637" cy="280" r="113" opacity=".55"/>
+      <circle cx="637" cy="280" r="129" opacity=".23"/>
+      <path d="m637 144v13m0 246v13m-136-136h13m246 0h13" opacity=".7"/>
+    </g>
+    <circle cx="637" cy="280" r="102" fill="url(#luar)"/>
+    <circle cx="637" cy="280" r="102" fill="url(#gravura)"/>
+    <g fill="#edd8a4" opacity=".75">
+      <circle cx="246" cy="235" r="1.7"/><circle cx="290" cy="309" r="1.3"/>
+      <circle cx="408" cy="158" r="2"/><circle cx="433" cy="234" r="1.5"/>
+      <circle cx="505" cy="175" r="1"/><circle cx="522" cy="311" r="1.5"/>
+      <circle cx="755" cy="161" r="1.8"/><circle cx="808" cy="255" r="1.5"/>
+      <circle cx="854" cy="192" r="1.2"/><circle cx="873" cy="311" r="2"/>
+    </g>
+    <use href="#estrela" transform="translate(360 208) scale(.8)"/>
+    <use href="#estrela" transform="translate(790 196)"/>
+    <use href="#estrela" transform="translate(467 290) scale(.6)"/>
+
+    <path fill="#789183" d="M0 448 129 356 257 359 386 402 514 442 643 390 771 423 900 390V601H0Z"/>
+    <g fill="#253f3c">
+      <path d="M572 410v-54l-4-4 15-29 14 29-4 4v20h15v-53l-4-4 11-19 11 19-4 4v34h9v-62l-5-5 16-28 16 28-5 5v62h8v-40l-4-4 12-23 12 23-4 4v57h11v-28l-4-3 12-24 12 24-4 3v56l-46 10Z"/>
+      <path d="M641 263v-24l22 5-20 6v13Z"/>
+      <path d="m553 427 23-37 28-9 32 6 29-11 37 15 17 29-53 19-86 8Z"/>
+    </g>
+    <g fill="#efd299">
+      <path d="M640 311q2-7 4 0v8h-4z M614 335q1.5-5 3 0v6h-3z M667 338q2-5 3 0v6h-3z"/>
+    </g>
+    <path fill="#547568" d="M0 438 129 471 257 471 386 435 514 473 643 412 771 459 900 445V601H0Z"/>
+    <path fill="#395d55" d="M0 464 129 447 257 457 386 498 514 447 643 444 771 491 900 510V601H0Z"/>
+    <path fill="#294b45" d="M0 536 129 501 257 501 386 532 514 534 643 499 771 505 900 537V601H0Z"/>
+    <g fill="#183834">
+      <use href="#pinheiro" transform="translate(344 485) scale(1.8)"/>
+      <use href="#pinheiro" transform="translate(363 510) scale(1.05)"/>
+      <use href="#pinheiro" transform="translate(780 520) scale(1.35)"/>
+      <use href="#pinheiro" transform="translate(835 503) scale(2.1)"/>
+      <use href="#pinheiro" transform="translate(862 531) scale(1.2)"/>
+    </g>
+    <path fill="#183834" d="M0 527 129 554 257 551 386 540 514 547 643 544 771 559 900 570V601H0Z"/>
+  </g>
 </svg>

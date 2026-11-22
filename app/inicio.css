@@ -1,0 +1,200 @@
+.inicio {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 clamp(0rem, 2vw, 2rem) var(--esp-5);
+}
+
+.barra-inicio, .marca-inicio, .titulo-arquivo {
+  display: flex;
+  align-items: center;
+}
+.barra-inicio {
+  justify-content: space-between;
+  gap: var(--esp-3);
+  padding-block: .35rem 1.2rem;
+}
+.marca-inicio {
+  gap: .65rem;
+  color: var(--ouro);
+  font: bold 1.4rem/1 var(--titulo);
+  letter-spacing: .12em;
+}
+.inicio .botao { border-radius: .4rem; }
+.inicio .botao-primario {
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / .22);
+}
+/* Resposta tátil em CSS, inspirada nos botões do Uiverse. */
+.inicio .botao-primario:active:not(:disabled) {
+  box-shadow: inset 0 2px 3px rgb(0 0 0 / .32);
+}
+.inicio .atalho-nova {
+  gap: .6rem;
+  border-color: var(--linha);
+  background: transparent;
+}
+.atalho-nova span { color: var(--ouro); font-size: 1.35rem; line-height: 1; }
+
+.capa-campanhas {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid #49635b;
+  border-radius: var(--raio-painel);
+  background: #152627;
+}
+.paisagem-inicio {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #152627 4%, rgb(21 38 39 / .94) 27%, transparent 59%),
+    url("/relevo-campanhas.svg") right center / auto 100% no-repeat,
+    linear-gradient(110deg, #152627 25%, #284647);
+}
+.chamada-inicio {
+  max-width: 30rem;
+  padding: clamp(1.8rem, 4.2vw, 3.6rem);
+}
+.chamada-inicio h1 {
+  font-size: clamp(3rem, 6.7vw, 5.7rem);
+  font-weight: 400;
+  line-height: .96;
+  letter-spacing: -.048em;
+}
+.chamada-inicio h1 em { display: block; color: var(--ouro); }
+.chamada-inicio p {
+  margin-block: 1.1rem 1.35rem;
+  color: #e7e9d9;
+}
+.inicio .atalho-lista { gap: 1rem; }
+.atalho-lista span { transition: transform 180ms var(--ease-out-3); }
+@media (prefers-reduced-motion: no-preference) {
+  .atalho-lista:is(:hover, :focus-visible) span { transform: translateY(2px); }
+}
+
+.paineis-campanhas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 1fr);
+  align-items: start;
+  gap: clamp(1.25rem, 3.5vw, 3.5rem);
+  margin-top: var(--size-fluid-3);
+}
+.arquivo-campanhas { min-width: 0; }
+.titulo-arquivo { gap: .65rem; margin-block: .35rem .4rem; }
+.inicio h2 {
+  font-weight: 400;
+  font-size: clamp(1.65rem, 3.1vw, 2.45rem);
+  letter-spacing: -.035em;
+  scroll-margin-top: 1rem;
+}
+.quantidade-campanhas {
+  padding: .1rem .5rem;
+  border: 1px solid var(--linha);
+  border-radius: 1rem;
+  color: var(--suave);
+  font: 600 .85rem/1.5 var(--fonte);
+  font-variant-numeric: tabular-nums;
+}
+.lista-campanhas {
+  display: grid;
+  gap: var(--esp-2);
+  padding: 0;
+  list-style: none;
+}
+.item-campanha, .arquivo-vazio {
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--superficie);
+}
+.item-campanha:focus-within { border-color: var(--contorno); }
+.resumo-campanha {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--esp-3);
+}
+.resumo-campanha h3, .arquivo-vazio h3 {
+  color: var(--texto);
+  font-size: 1.45rem;
+  letter-spacing: -.015em;
+}
+.resumo-campanha small { display: block; margin-top: .2rem; }
+.livro-campanha {
+  display: grid;
+  width: 2.25rem;
+  height: 2.8rem;
+  place-items: center;
+  box-sizing: border-box;
+  border: 1px solid #9a885d;
+  border-left: .3rem double #c1ac76;
+  border-radius: .16rem .35rem .35rem .16rem;
+  background: #2c423c;
+  box-shadow: inset 0 -.2rem #1d302c;
+}
+.livro-campanha::after {
+  content: "";
+  width: .46rem;
+  height: .46rem;
+  border: 1px solid var(--ouro);
+  transform: rotate(45deg);
+}
+.acoes-campanha {
+  margin-top: var(--esp-3);
+  padding-top: var(--esp-2);
+  border-top: 1px solid var(--linha);
+  gap: .5rem;
+}
+.acoes-campanha > .botao-perigo {
+  margin-inline-start: auto;
+  border-color: transparent;
+  background: transparent;
+}
+.acoes-campanha > .botao-perigo:hover { border-color: var(--erro); }
+.arquivo-vazio p { margin-block: .4rem 1rem; }
+
+.inicio .ficha-criacao {
+  color-scheme: light;
+  --texto: #20322c;
+  --suave: #4b574e;
+  --campo: #fff9eb;
+  --superficie: #efe5cd;
+  --relevo: #e3d8bd;
+  --contorno: #887f67;
+  --foco: #14574d;
+  --ouro: #224a3e;
+  --ouro-hover: #173b32;
+  --tinta: #fff8e7;
+  color: var(--texto);
+  padding: var(--size-fluid-3);
+  border-color: #c2b18c;
+  border-radius: var(--raio);
+  background: linear-gradient(125deg, #f6ecd6, var(--superficie));
+  box-shadow: inset 0 3px 0 #ccae70;
+}
+.ficha-criacao h2 {
+  padding-bottom: .8rem;
+  border-bottom: 1px solid #c5b89b;
+}
+.ficha-criacao .campo { border-radius: .4rem; }
+.ficha-criacao .botao-primario { width: 100%; }
+
+@media (max-width: 48rem) {
+  .paineis-campanhas { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 40rem) {
+  .inicio { padding-inline: 0; }
+  .barra-inicio { padding-block: 0 .85rem; }
+  .chamada-inicio { padding: 1.5rem 1.1rem; }
+  .chamada-inicio h1 { font-size: clamp(2.75rem, 10vw, 3.6rem); }
+  .chamada-inicio p { max-width: min(14rem, 70%); margin-block: .75rem 1rem; }
+  .paisagem-inicio {
+    background:
+      linear-gradient(90deg, #152627 0%, rgb(21 38 39 / .92) 40%, transparent 86%),
+      url("/relevo-campanhas.svg") right bottom / auto 58% no-repeat,
+      #233e3d;
+  }
+  .arquivo-campanhas { gap: var(--esp-2); }
+  .acoes-campanha > .botao-primario { flex-basis: 100%; }
+  .inicio .ficha-criacao { padding: 1.1rem; }
+}

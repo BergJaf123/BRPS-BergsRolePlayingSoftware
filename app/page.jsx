@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ExcluirCampanha from "../components/ExcluirCampanha";
+import "./inicio.css";
 
 export default function Home() {
   const [campanhas, setCampanhas] = useState(null);
@@ -53,17 +54,41 @@ export default function Home() {
   }
 
   return (
-    <main className="pagina">
-      <header className="cabecalho cabecalho-campanhas">
-        <div>
-          <h1>BRPS</h1>
-          <p className="texto-suave">Mesa virtual de RPG com IA para o mestre.</p>
+    <main className="inicio">
+      <header className="barra-inicio">
+        <div className="marca-inicio">
+          <svg aria-hidden="true" focusable="false" width="36" height="40" viewBox="0 0 36 40"
+            fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+            <path d="M18 2 34 11v18l-16 9L2 29V11Z M18 2l9 11-9 16L9 13Z M2 11l7 2h18l7-2 M2 29h16l16 0 M9 13 2 29m25-16 7 16m-16 0v9" />
+          </svg>
+          BRPS
         </div>
+        <a className="botao atalho-nova" href="#titulo-nova">
+          <span aria-hidden="true">+</span> Nova campanha
+        </a>
       </header>
 
+      <section className="capa-campanhas" aria-labelledby="titulo-inicio">
+        <div className="paisagem-inicio" aria-hidden="true" />
+        <div className="chamada-inicio">
+          <h1 id="titulo-inicio">Mesa de <em>campanhas</em></h1>
+          <p>Mesa virtual de RPG com IA para o mestre.</p>
+          <a className="botao botao-primario atalho-lista" href="#titulo-lista">
+            Escolher campanha <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+      </section>
+
       <div className="paineis-campanhas">
-        <section className="cartao pilha" aria-labelledby="titulo-lista">
-          <h2 id="titulo-lista">Campanhas</h2>
+        <section className="arquivo-campanhas pilha" aria-labelledby="titulo-lista">
+          <div className="titulo-arquivo">
+            <h2 id="titulo-lista" tabIndex={-1}>Campanhas disponíveis</h2>
+            {campanhas?.length > 0 && !erroLista && (
+              <span className="quantidade-campanhas" aria-hidden="true">
+                {campanhas.length}
+              </span>
+            )}
+          </div>
           {campanhas === null && <p className="aviso" role="status">Carregando campanhas...</p>}
           {erroLista && (
             <div className="aviso-erro" role="alert">
@@ -72,20 +97,27 @@ export default function Home() {
             </div>
           )}
           {campanhas && campanhas.length === 0 && !erroLista && (
-            <p className="aviso">Nenhuma campanha ainda. Use o formulário de nova campanha para criar a primeira.</p>
+            <div className="aviso arquivo-vazio">
+              <h3>Nenhuma campanha ainda</h3>
+              <p>Crie a primeira para reunir sua mesa.</p>
+              <a className="botao" href="#titulo-nova">Criar a primeira campanha</a>
+            </div>
           )}
           {campanhas && campanhas.length > 0 && (
             <ul className="lista-campanhas">
               {campanhas.map((c) => (
                 <li key={c.id} className="item-campanha">
-                  <div>
-                    <strong>{c.nome}</strong>
-                    <small>
-                      {c.salas} {c.salas === 1 ? "sala" : "salas"} · criada em{" "}
-                      {new Date(c.criado_em).toLocaleDateString("pt-BR")}
-                    </small>
+                  <div className="resumo-campanha">
+                    <span className="livro-campanha" aria-hidden="true" />
+                    <div>
+                      <h3>{c.nome}</h3>
+                      <small>
+                        {c.salas} {c.salas === 1 ? "sala" : "salas"} · criada em{" "}
+                        {new Date(c.criado_em).toLocaleDateString("pt-BR")}
+                      </small>
+                    </div>
                   </div>
-                  <div className="acoes">
+                  <div className="acoes acoes-campanha">
                     <Link
                       className="botao botao-primario"
                       href={`/tela?campanha=${c.id}`}
@@ -108,21 +140,22 @@ export default function Home() {
           )}
         </section>
 
-        <section className="cartao pilha" aria-labelledby="titulo-nova">
-          <h2 id="titulo-nova">Nova campanha</h2>
+        <section className="cartao pilha ficha-criacao" aria-labelledby="titulo-nova">
+          <h2 id="titulo-nova" tabIndex={-1}>Nova campanha</h2>
           <form className="pilha" onSubmit={criar}>
             <div>
               <label className="rotulo" htmlFor="nome">Nome da campanha</label>
-              <input className="campo" id="nome" value={nome} onChange={(e) => setNome(e.target.value)} maxLength={80} required />
+              <input className="campo" id="nome" placeholder="Ex. O Vale das Brumas"
+                value={nome} onChange={(e) => setNome(e.target.value)} maxLength={80} required />
             </div>
             <div>
-              <label className="rotulo" htmlFor="codigo">Código do mestre (4 a 40 caracteres)</label>
+              <label className="rotulo" htmlFor="codigo">Código do mestre</label>
               <input
                 className="campo" id="codigo" type="password" autoComplete="new-password"
                 value={codigo} onChange={(e) => setCodigo(e.target.value)}
                 minLength={4} maxLength={40} required aria-describedby="ajuda-codigo"
               />
-              <small id="ajuda-codigo">Guarde o código. Ele protege a campanha e não pode ser recuperado.</small>
+              <small id="ajuda-codigo">Use de 4 a 40 caracteres. Guarde o código para acessar o painel do mestre. Ele não pode ser recuperado.</small>
             </div>
             <button className="botao botao-primario" type="submit" disabled={enviando}>
               {enviando ? "Criando..." : "Criar campanha"}
