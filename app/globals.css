@@ -24,6 +24,9 @@
   --token-borda: #283433;
   --token-selecao: #141a18;
   --borda-mapa: 3px;
+  /* Open Props (open-props.style): size-fluid-3 e ease-out-3. */
+  --size-fluid-3: clamp(1.5rem, 3vw, 2rem);
+  --ease-out-3: cubic-bezier(0, 0, .3, 1);
   --esp-1: .375rem;
   --esp-2: .75rem;
   --esp-3: 1rem;
@@ -77,6 +80,18 @@ a { color: var(--ouro); text-underline-offset: .2em; }
 
 .cabecalho h1 { color: var(--ouro); }
 .cabecalho p { margin-top: var(--esp-1); }
+
+.cabecalho-campanhas {
+  padding: var(--size-fluid-3);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio-painel);
+  background-color: var(--superficie);
+  background-image: linear-gradient(100deg, var(--superficie), transparent 85%),
+                    url("/relevo-campanhas.svg");
+  background-position: center, right bottom;
+  background-size: cover, 100% 85%;
+  background-repeat: no-repeat;
+}
 
 .paineis-campanhas {
   display: grid;
@@ -141,6 +156,7 @@ a { color: var(--ouro); text-underline-offset: .2em; }
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  transition: background-color 160ms var(--ease-out-3), border-color 160ms var(--ease-out-3);
 }
 .botao:hover { border-color: var(--ouro); }
 .botao-primario { background: var(--ouro); color: var(--tinta); border-color: var(--ouro); }
