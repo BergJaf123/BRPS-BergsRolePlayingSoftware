@@ -57,13 +57,13 @@ export default function Tela() {
     };
   }, [campanha]);
 
-  if (campanha === null) return <p>Carregando...</p>;
+  if (campanha === null) return <p className="aviso" role="status">Carregando...</p>;
   if (campanha === "") {
     return (
-      <main>
+      <main className="pagina pagina-acesso pilha">
         <h1>Jogadores</h1>
-        <p>Nenhuma campanha escolhida.</p>
-        <Link href="/">Ver as campanhas</Link>
+        <p className="aviso">Nenhuma campanha escolhida.</p>
+        <Link className="botao" href="/">Ver as campanhas</Link>
       </main>
     );
   }
@@ -84,7 +84,7 @@ export default function Tela() {
   const tam = Math.max(16, Math.floor(Math.min((mapaW - 6) / colunas, (mapaH - 6) / linhas)));
 
   return (
-    <main
+    <main className="tela-jogadores"
       style={{
         display: "flex",
         flexDirection: imagem && largo ? "row" : "column",
@@ -95,11 +95,11 @@ export default function Tela() {
     >
       <h1 style={oculto}>Tela dos jogadores</h1>
       {erro && (
-        <p role="alert" style={{ color: "#A32D2D", margin: 0 }}>
+        <p role="alert" className="aviso-erro">
           {estado ? "Reconectando..." : erro}
         </p>
       )}
-      {!estado && !erro && <p>Carregando...</p>}
+      {!estado && !erro && <p className="aviso" role="status">Carregando...</p>}
       {estado && (
         <>
           <Mapa
@@ -111,6 +111,7 @@ export default function Tela() {
           />
           {imagem && (
             <div
+              className="imagem-sala"
               role="img"
               aria-label="Imagem da sala"
               style={{
@@ -121,8 +122,6 @@ export default function Tela() {
                 backgroundImage: `url(${imagem})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                borderRadius: 8,
-                border: "3px solid #444441",
                 boxSizing: "border-box",
               }}
             />

@@ -20,12 +20,12 @@ export default function Mapa({
 
   return (
     <div
+      className="tabuleiro"
       style={{
         position: "relative",
         width: colunas * tam,
         height: linhas * tam,
-        background: "#444441",
-        border: "3px solid #444441",
+        "--largura-grade": `${colunas * tam}px`,
       }}
     >
       <div
@@ -50,14 +50,14 @@ export default function Mapa({
                 width: tam,
                 height: tam,
                 boxSizing: "border-box",
-                border: chao ? "0.5px solid #B4B2A9" : "none",
+                border: chao ? "0.5px solid var(--grade-linha)" : "none",
                 background: !chao
-                  ? "#444441"
+                  ? "var(--grade-parede)"
                   : ehHover
-                  ? "#B5D4F4"
+                  ? "var(--grade-destino)"
                   : ehSel
-                  ? "#FAC775"
-                  : "#F1EFE8",
+                  ? "var(--grade-selecao)"
+                  : "var(--grade-chao)",
                 cursor: chao && interativo && selecionado ? "pointer" : "default",
               }}
             />
@@ -67,6 +67,7 @@ export default function Mapa({
 
       {tokens.map((t) => (
         <div
+          className="token"
           key={t.id}
           title={t.nome}
           onClick={(e) => {
@@ -87,8 +88,8 @@ export default function Mapa({
             opacity: t.revelado ? 1 : 0.45,
             border:
               selecionado === t.id
-                ? "3px solid #000"
-                : `2px solid ${t.imagem ? t.cor : "#2C2C2A"}`,
+                ? "3px solid var(--token-selecao)"
+                : `2px solid ${t.imagem ? t.cor : "var(--token-borda)"}`,
             boxSizing: "border-box",
             cursor: onToken ? "pointer" : "default",
           }}

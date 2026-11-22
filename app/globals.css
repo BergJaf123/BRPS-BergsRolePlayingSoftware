@@ -16,6 +16,14 @@
   --erro-fundo: #412a2a;
   --ok: #b6e8ba;
   --ok-fundo: #21382c;
+  --grade-parede: #344442;
+  --grade-linha: #8c9a8b;
+  --grade-chao: #e0ddc9;
+  --grade-destino: #a8d8cd;
+  --grade-selecao: #efc670;
+  --token-borda: #283433;
+  --token-selecao: #141a18;
+  --borda-mapa: 3px;
   --esp-1: .375rem;
   --esp-2: .75rem;
   --esp-3: 1rem;
@@ -229,4 +237,23 @@ textarea.campo { min-height: 5.5rem; resize: vertical; }
 
 @media (max-width: 56rem) {
   .mesa { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* A moldura enquadra o tabuleiro inteiro. Casas e tokens mantêm o mesmo
+   sistema de coordenadas, inclusive durante um clique ou uma transição. */
+.tela-jogadores { container-type: inline-size; }
+.tabuleiro {
+  flex: none;
+  box-sizing: content-box;
+  background: var(--grade-parede);
+  border: var(--borda-mapa) solid var(--grade-parede);
+  border-radius: 3px;
+  --largura-moldura: calc(var(--largura-grade) + 2 * var(--borda-mapa));
+  zoom: min(1, tan(atan2(100cqi, var(--largura-moldura))));
+}
+.token { transition: left 180ms ease-out, top 180ms ease-out; }
+.imagem-sala {
+  border: var(--borda-mapa) solid var(--grade-parede);
+  border-radius: var(--raio);
+  animation: revelar-sala 180ms ease-out;
 }
