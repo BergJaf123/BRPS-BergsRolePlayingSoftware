@@ -102,65 +102,65 @@ export default function Mestre() {
   const campo = (k) => (e) => setRascunho({ ...rascunho, [k]: e.target.value });
   const token = tokens.find((t) => t.id === sel);
 
-  if (campanha === null) return <p>Carregando...</p>;
-  if (campanha === "") {
+  if (campanha === null) return <p className="aviso" role="status">Carregando...</p>;
+  if (campanha === "" || !codigo) {
     return (
-      <main>
+      <main className="pagina pagina-acesso pilha">
         <h1>Mestre</h1>
-        <p>Nenhuma campanha escolhida.</p>
-        <Link href="/">Voltar para as campanhas</Link>
-      </main>
-    );
-  }
-  if (!codigo) {
-    return (
-      <main>
-        <h1>Mestre</h1>
-        <Acesso onEntrar={entrar} />
-        <p>
-          <Link href="/">Voltar para as campanhas</Link>
-        </p>
+        {campanha === "" ? (
+          <p className="aviso">Nenhuma campanha escolhida.</p>
+        ) : (
+          <Acesso onEntrar={entrar} />
+        )}
+        <Link className="botao" href="/">Voltar para as campanhas</Link>
       </main>
     );
   }
 
   return (
-    <main style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-      <section>
+    <main className="pagina">
+      <header className="cabecalho">
         <h1>Mestre</h1>
-        <p>
-          <Link href="/">Campanhas</Link> ·{" "}
-          <Link href={`/tela?campanha=${campanha}`} target="_blank" rel="noreferrer">
+        <nav className="acoes" aria-label="Campanha">
+          <Link className="botao" href="/">Campanhas</Link>
+          <Link className="botao botao-primario" href={`/tela?campanha=${campanha}`} target="_blank" rel="noreferrer">
             Abrir tela dos jogadores
-          </Link>{" "}
-          ·{" "}
-          <span role="status">
-            {status === "salvando" ? "Salvando..." : status === "salvo" ? "Salvo no banco" : status}
-          </span>
-        </p>
-        <p>Clica num token pra selecionar e numa casa pra mover.</p>
-        <Mapa
-          tokens={tokens}
-          colunas={mapa.colunas}
-          linhas={mapa.linhas}
-          mascara={mapa.mascara}
-          selecionado={sel}
-          onToken={setSel}
-          onCelula={(x, y) => sel && mover(sel, x, y)}
-        />
-        <div style={{ marginTop: 12, maxWidth: 480 }}>
+          </Link>
+        </nav>
+      </header>
+
+      <div className="mesa">
+        <section className="cartao pilha" aria-labelledby="titulo-tabuleiro">
+          <h2 id="titulo-tabuleiro">Tabuleiro</h2>
+          {status && (
+            <p className={status === "salvo" ? "aviso-ok" : status === "salvando" ? "aviso" : "aviso-erro"} role="status">
+              {status === "salvando" ? "Salvando..." : status === "salvo" ? "Salvo no banco" : status}
+            </p>
+          )}
+          <p className="texto-suave">Selecione um token e depois uma casa para movê-lo.</p>
+          <div className="area-mapa">
+            <Mapa
+              tokens={tokens}
+              colunas={mapa.colunas}
+              linhas={mapa.linhas}
+              mascara={mapa.mascara}
+              selecionado={sel}
+              onToken={setSel}
+              onCelula={(x, y) => sel && mover(sel, x, y)}
+            />
+          </div>
           {token ? (
-            <div>
-              <button onClick={() => alternarRevelado(token.id)}>
-                {token.revelado ? "Ocultar" : "Revelar"} {token.nome}
-              </button>
-              <div style={{ margin: "8px 0", display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                <label style={{ cursor: "pointer", border: "1px solid #888", borderRadius: 4, padding: "2px 8px", fontSize: 13 }}>
-                  Escolher imagem
+            <div className="rascunho pilha">
+              <h3>{token.nome}</h3>
+              <div className="acoes">
+                <button className="botao" onClick={() => alternarRevelado(token.id)}>
+                  {token.revelado ? "Ocultar" : "Revelar"} {token.nome}
+                </button>
+                <label className="botao seletor-arquivo">
+                  Escolher imagem do token
                   <input
                     type="file"
                     accept="image/*"
-                    hidden
                     onChange={async (e) => {
                       const arq = e.target.files[0];
                       e.target.value = "";
@@ -175,143 +175,111 @@ export default function Mestre() {
                   />
                 </label>
                 {token.imagem && (
-                  <button style={{ fontSize: 13 }} onClick={() => definirImagem(token.id, null)}>
-                    Remover imagem
-                  </button>
+                  <button className="botao botao-perigo" onClick={() => definirImagem(token.id, null)}>Remover imagem</button>
                 )}
-                {erroImg && <span style={{ color: "#A32D2D", fontSize: 13 }}>{erroImg}</span>}
               </div>
+              {erroImg && <p className="aviso-erro" role="alert">{erroImg}</p>}
               {token.hp !== undefined && (
-                <div style={{ marginTop: 8 }}>
-                  <b>{token.nome}</b> — PV {token.hp}/{token.hpMax ?? token.hp} | CA {token.ca}
-                  {token.hp === 0 && <b style={{ color: "#A32D2D" }}> (caído)</b>}
-                  <div style={{ display: "flex", gap: 6, margin: "8px 0" }}>
-                    <input
-                      value={valor}
-                      onChange={(e) => setValor(e.target.value.replace(/\D/g, ""))}
-                      placeholder="valor"
-                      style={{ width: 70, padding: 4 }}
-                    />
-                    <button
-                      disabled={!valor}
+                <div className="pilha">
+                  <p>PV {token.hp}/{token.hpMax ?? token.hp} · CA {token.ca}
+                    {token.hp === 0 && <strong className="texto-perigo"> (caído)</strong>}
+                  </p>
+                  <div className="acoes acoes-campos">
+                    <label className="rotulo">Pontos de vida
+                      <input className="campo campo-numero" inputMode="numeric" value={valor}
+                        onChange={(e) => setValor(e.target.value.replace(/\D/g, ""))} />
+                    </label>
+                    <button className="botao botao-perigo" disabled={!valor}
                       onClick={() => {
                         ajustarHp(token.id, -Number(valor));
                         setValor("");
-                      }}
-                    >
+                      }}>
                       Dano
                     </button>
-                    <button
-                      disabled={!valor}
+                    <button className="botao" disabled={!valor}
                       onClick={() => {
                         ajustarHp(token.id, Number(valor));
                         setValor("");
-                      }}
-                    >
+                      }}>
                       Cura
                     </button>
                   </div>
-                  {token.descricao}
-                  <br />
-                  {(token.ataques || []).map((a, i) => (
-                    <span key={i}>
-                      • {a}
-                      <br />
-                    </span>
-                  ))}
+                  {token.descricao && <p>{token.descricao}</p>}
+                  {!!token.ataques?.length && (
+                    <ul className="lista-ataques">
+                      {token.ataques.map((a, i) => <li key={i}>{a}</li>)}
+                    </ul>
+                  )}
                 </div>
               )}
             </div>
           ) : (
-            <span>Nenhum token selecionado</span>
+            <p className="aviso">Nenhum token selecionado.</p>
           )}
-        </div>
-      </section>
+        </section>
 
-      <section style={{ width: 320 }}>
-        <PainelMapa mapa={mapa} onAplicar={definirMapa} />
-        <PainelSala sala={sala} onChange={definirSala} />
-        <div style={{ marginTop: 16 }}>
+        <div className="pilha">
+          <PainelMapa mapa={mapa} onAplicar={definirMapa} />
+          <PainelSala sala={sala} onChange={definirSala} />
           <Dados />
-        </div>
 
-        <h2 style={{ marginTop: 24 }}>Personagem</h2>
-        <div style={{ display: "flex", gap: 6 }}>
-          <input
-            value={novoNome}
-            onChange={(e) => setNovoNome(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && novoPersonagem()}
-            placeholder="nome do personagem"
-            aria-label="Nome do personagem"
-            style={{ flex: 1, padding: 6, minWidth: 0 }}
-          />
-          <button onClick={novoPersonagem} disabled={!novoNome.trim()}>
-            Adicionar
-          </button>
-        </div>
-
-        <h2 style={{ marginTop: 24 }}>Gerar com IA</h2>
-        <p style={{ fontSize: 12, margin: "0 0 6px" }}>
-          A IA pode errar. Revise o rascunho antes de aprovar.
-        </p>
-        <input
-          value={pedido}
-          onChange={(e) => setPedido(e.target.value)}
-          placeholder="ex: goblin xamã nível 3"
-          aria-label="Pedido para a IA"
-          style={{ width: "100%", boxSizing: "border-box", padding: 6 }}
-        />
-        <button onClick={gerar} disabled={carregando || !pedido.trim()} style={{ marginTop: 8 }}>
-          {carregando ? "Gerando..." : "Gerar rascunho"}
-        </button>
-        {erro && <p style={{ color: "#A32D2D" }}>{erro}</p>}
-
-        {rascunho && (
-          <div style={{ marginTop: 12, border: "1px solid #888", borderRadius: 8, padding: 10 }}>
-            {simulado && <p style={{ fontSize: 12 }}>Modo simulado (sem chave da IA).</p>}
-            <label>
-              Nome
-              <input
-                value={rascunho.nome}
-                onChange={campo("nome")}
-                style={{ width: "100%", boxSizing: "border-box" }}
-              />
-            </label>
-            <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
-              <label>
-                PV
-                <input value={rascunho.hp} onChange={campo("hp")} style={{ width: 60 }} />
-              </label>
-              <label>
-                CA
-                <input value={rascunho.ca} onChange={campo("ca")} style={{ width: 60 }} />
-              </label>
+          <section className="cartao pilha" aria-labelledby="titulo-personagem">
+            <h2 id="titulo-personagem">Personagem</h2>
+            <div>
+              <label className="rotulo" htmlFor="novo-nome">Nome do personagem</label>
+              <div className="acoes">
+                <input className="campo campo-flex" id="novo-nome"
+                  value={novoNome}
+                  onChange={(e) => setNovoNome(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && novoPersonagem()}
+                />
+                <button className="botao" onClick={novoPersonagem} disabled={!novoNome.trim()}>Adicionar</button>
+              </div>
             </div>
-            <label>
-              Descrição
-              <textarea
-                value={rascunho.descricao}
-                onChange={campo("descricao")}
-                rows={3}
-                style={{ width: "100%", boxSizing: "border-box" }}
-              />
-            </label>
-            <label>
-              Ataques (um por linha)
-              <textarea
-                value={rascunho.ataquesTexto}
-                onChange={campo("ataquesTexto")}
-                rows={3}
-                style={{ width: "100%", boxSizing: "border-box" }}
-              />
-            </label>
-            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <button onClick={aprovar}>Aprovar</button>
-              <button onClick={() => setRascunho(null)}>Descartar</button>
+          </section>
+
+          <section className="cartao pilha" aria-labelledby="titulo-npc">
+            <h2 id="titulo-npc">Gerar NPC com IA</h2>
+            <p className="aviso" id="aviso-ia">A IA pode errar. Revise o rascunho antes de aprovar.</p>
+            <div>
+              <label className="rotulo" htmlFor="pedido-npc">Descrição do NPC para a IA</label>
+              <input className="campo" id="pedido-npc" aria-describedby="aviso-ia"
+                value={pedido} onChange={(e) => setPedido(e.target.value)} placeholder="Ex. goblin xamã nível 3" />
             </div>
-          </div>
-        )}
-      </section>
+            <button className="botao botao-primario" onClick={gerar} disabled={carregando || !pedido.trim()}>
+              {carregando ? "Gerando..." : "Gerar rascunho"}
+            </button>
+            {erro && <p className="aviso-erro" role="alert">{erro}</p>}
+            {rascunho && (
+              <div className="rascunho pilha">
+                <h3>Rascunho do NPC</h3>
+                {simulado && <p className="aviso">Modo simulado (sem chave da IA).</p>}
+                <label className="rotulo">Nome
+                  <input className="campo" value={rascunho.nome} onChange={campo("nome")} />
+                </label>
+                <div className="acoes acoes-campos">
+                  <label className="rotulo">PV
+                    <input className="campo campo-numero" value={rascunho.hp} onChange={campo("hp")} />
+                  </label>
+                  <label className="rotulo">CA
+                    <input className="campo campo-numero" value={rascunho.ca} onChange={campo("ca")} />
+                  </label>
+                </div>
+                <label className="rotulo">Descrição
+                  <textarea className="campo" value={rascunho.descricao} onChange={campo("descricao")} rows={3} />
+                </label>
+                <label className="rotulo">Ataques (um por linha)
+                  <textarea className="campo" value={rascunho.ataquesTexto} onChange={campo("ataquesTexto")} rows={3} />
+                </label>
+                <div className="acoes">
+                  <button className="botao botao-primario" onClick={aprovar}>Aprovar</button>
+                  <button className="botao" onClick={() => setRascunho(null)}>Descartar</button>
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
     </main>
   );
 }

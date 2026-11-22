@@ -35,45 +35,39 @@ export default function Dados() {
   const ultimo = historico[0];
 
   return (
-    <div style={{ border: "1px solid #888", borderRadius: 8, padding: 10 }}>
-      <h2 style={{ marginTop: 0 }}>Dados</h2>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+    <section className="cartao pilha" aria-labelledby="titulo-dados">
+      <h2 id="titulo-dados">Dados</h2>
+      <div className="acoes dados-rapidos">
         {[4, 6, 8, 10, 12, 20].map((n) => (
-          <button key={n} onClick={() => fazer(`1d${n}`)}>
-            d{n}
-          </button>
+          <button className="botao" key={n} onClick={() => fazer(`1d${n}`)}>d{n}</button>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-        <input
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && texto.trim() && fazer(texto)}
-          placeholder="ex: 2d6+3"
-          style={{ flex: 1, padding: 6, minWidth: 0 }}
-        />
-        <button onClick={() => fazer(texto)} disabled={!texto.trim()}>
-          Rolar
-        </button>
+      <div>
+        <label className="rotulo" htmlFor="expressao-dados">Expressão dos dados</label>
+        <div className="acoes">
+          <input
+            className="campo campo-flex"
+            id="expressao-dados"
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && texto.trim() && fazer(texto)}
+            placeholder="Ex. 2d6+3"
+          />
+          <button className="botao" onClick={() => fazer(texto)} disabled={!texto.trim()}>Rolar</button>
+        </div>
       </div>
-      {erro && <p style={{ color: "#A32D2D", fontSize: 13 }}>{erro}</p>}
+      {erro && <p className="aviso-erro" role="alert">{erro}</p>}
       {ultimo && (
-        <div style={{ marginTop: 10 }}>
-          <div style={{ fontSize: 32, fontWeight: 600 }}>{ultimo.total}</div>
-          <div style={{ fontSize: 13 }}>
-            {ultimo.expr}: [{ultimo.dados.join(", ")}]
-          </div>
+        <div className="aviso-ok" role="status">
+          <strong className="total-dados">{ultimo.total}</strong>
+          {ultimo.expr}: [{ultimo.dados.join(", ")}]
         </div>
       )}
       {historico.length > 1 && (
-        <div style={{ marginTop: 8, fontSize: 12 }}>
-          {historico.slice(1).map((h) => (
-            <div key={h.id}>
-              {h.expr} = {h.total}
-            </div>
-          ))}
-        </div>
+        <ul className="historico-dados" aria-label="Rolagens anteriores">
+          {historico.slice(1).map((h) => <li key={h.id}>{h.expr} = {h.total}</li>)}
+        </ul>
       )}
-    </div>
+    </section>
   );
 }

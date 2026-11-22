@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 import { lerImagemSala } from "../lib/imagem";
 
@@ -19,51 +20,36 @@ export default function PainelSala({ sala, onChange }) {
   }
 
   return (
-    <div style={{ border: "1px solid #888", borderRadius: 8, padding: 10, marginTop: 16 }}>
-      <h2 style={{ marginTop: 0 }}>Imagem da sala</h2>
+    <section className="cartao pilha" aria-labelledby="titulo-sala">
+      <h2 id="titulo-sala">Imagem da sala</h2>
       {sala.imagem ? (
-        <div
-          role="img"
-          aria-label="Prévia da imagem da sala"
-          style={{
-            width: "100%",
-            aspectRatio: "16 / 9",
-            backgroundImage: `url(${sala.imagem})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            borderRadius: 6,
-            border: "1px solid #888",
-          }}
-        />
+        <Image key={sala.imagem} className="previa-sala" src={sala.imagem}
+          width={640} height={360} unoptimized alt="Prévia da imagem da sala" />
       ) : (
-        <p style={{ fontSize: 13, margin: "0 0 8px" }}>Nenhuma imagem escolhida.</p>
+        <p className="aviso">Nenhuma imagem escolhida.</p>
       )}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-        <label
-          style={{ cursor: "pointer", border: "1px solid #888", borderRadius: 4, padding: "2px 8px", fontSize: 13 }}
-        >
+      <div className="acoes">
+        <label className="botao seletor-arquivo">
           {sala.imagem ? "Trocar imagem" : "Escolher imagem"}
-          <input type="file" accept="image/*" hidden onChange={escolher} />
+          <input type="file" accept="image/*" onChange={escolher} />
         </label>
         {sala.imagem && (
           <>
-            <button onClick={() => onChange({ visivel: !sala.visivel })}>
+            <button className="botao" onClick={() => onChange({ visivel: !sala.visivel })}>
               {sala.visivel ? "Esconder dos jogadores" : "Mostrar aos jogadores"}
             </button>
-            <button onClick={() => onChange({ imagem: null, visivel: false })}>Remover</button>
+            <button className="botao botao-perigo" onClick={() => onChange({ imagem: null, visivel: false })}>
+              Remover
+            </button>
           </>
         )}
       </div>
       {sala.imagem && (
-        <p role="status" style={{ fontSize: 13, margin: "8px 0 0" }}>
+        <p className={sala.visivel ? "aviso-ok" : "aviso"} role="status">
           {sala.visivel ? "Os jogadores estão vendo esta imagem." : "Escondida dos jogadores."}
         </p>
       )}
-      {erro && (
-        <p role="alert" style={{ color: "#A32D2D", fontSize: 13 }}>
-          {erro}
-        </p>
-      )}
-    </div>
+      {erro && <p className="aviso-erro" role="alert">{erro}</p>}
+    </section>
   );
 }

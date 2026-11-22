@@ -62,59 +62,48 @@ export default function PainelMapa({ mapa, onAplicar }) {
     : 0;
 
   return (
-    <div style={{ border: "1px solid #888", borderRadius: 8, padding: 10 }}>
-      <h2 style={{ marginTop: 0 }}>Mapa</h2>
-      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-        <label>
-          Largura{" "}
-          <input value={larg} onChange={(e) => setLarg(e.target.value.replace(/\D/g, ""))} style={{ width: 44, padding: 4 }} />
+    <section className="cartao pilha" aria-labelledby="titulo-mapa">
+      <h2 id="titulo-mapa">Configurar mapa</h2>
+      <div className="acoes acoes-campos">
+        <label className="rotulo">Largura
+          <input className="campo campo-numero" inputMode="numeric" value={larg}
+            onChange={(e) => setLarg(e.target.value.replace(/\D/g, ""))} />
         </label>
-        <label>
-          Altura{" "}
-          <input value={alt} onChange={(e) => setAlt(e.target.value.replace(/\D/g, ""))} style={{ width: 44, padding: 4 }} />
+        <label className="rotulo">Altura
+          <input className="campo campo-numero" inputMode="numeric" value={alt}
+            onChange={(e) => setAlt(e.target.value.replace(/\D/g, ""))} />
         </label>
-        <button onClick={aplicarRetangulo}>Aplicar retângulo</button>
+        <button className="botao" onClick={aplicarRetangulo}>Aplicar retângulo</button>
       </div>
-
-      <div style={{ marginTop: 10 }}>
+      <div>
+        <label className="rotulo" htmlFor="pedido-mapa">Descrição do mapa para a IA</label>
         <input
+          className="campo" id="pedido-mapa"
           value={pedido}
           onChange={(e) => setPedido(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && pedido.trim() && !carregando && gerar()}
-          placeholder="ex: grid em L invertido, 7 de largura e 14 de altura"
-          style={{ width: "100%", boxSizing: "border-box", padding: 6 }}
+          placeholder="Ex. mapa em L, com 7 por 14 casas"
         />
-        <button onClick={gerar} disabled={carregando || !pedido.trim()} style={{ marginTop: 6 }}>
-          {carregando ? "Gerando..." : "Gerar mapa"}
-        </button>
       </div>
-
-      {erro && <p style={{ color: "#A32D2D", fontSize: 13 }}>{erro}</p>}
-
+      <button className="botao" onClick={gerar} disabled={carregando || !pedido.trim()}>
+        {carregando ? "Gerando..." : "Gerar mapa"}
+      </button>
+      {erro && <p className="aviso-erro" role="alert">{erro}</p>}
       {rascunho && (
-        <div style={{ marginTop: 10 }}>
-          {simulado && <p style={{ fontSize: 12 }}>Modo simulado (sem chave da IA).</p>}
-          <div style={{ fontSize: 13, marginBottom: 6 }}>
-            <b>{rascunho.nome}</b> — {rascunho.colunas} x {rascunho.linhas}
+        <div className="rascunho pilha">
+          {simulado && <p className="aviso">Modo simulado (sem chave da IA).</p>}
+          <h3>{rascunho.nome} · {rascunho.colunas} × {rascunho.linhas}</h3>
+          <div className="area-mapa">
+            <Mapa tokens={[]} colunas={rascunho.colunas} linhas={rascunho.linhas}
+              mascara={rascunho.mascara} tamanho={prev} />
           </div>
-          <div style={{ overflow: "auto" }}>
-            <Mapa
-              tokens={[]}
-              colunas={rascunho.colunas}
-              linhas={rascunho.linhas}
-              mascara={rascunho.mascara}
-              tamanho={prev}
-            />
-          </div>
-          <p style={{ fontSize: 12 }}>
-            Tokens que ficarem fora do chão vão para as primeiras casas livres.
-          </p>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={usar}>Usar este mapa</button>
-            <button onClick={() => setRascunho(null)}>Descartar</button>
+          <small>Tokens que ficarem fora do chão vão para as primeiras casas livres.</small>
+          <div className="acoes">
+            <button className="botao botao-primario" onClick={usar}>Usar este mapa</button>
+            <button className="botao" onClick={() => setRascunho(null)}>Descartar</button>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
