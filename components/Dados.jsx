@@ -59,7 +59,8 @@ export default function Dados() {
       {erro && <p className="aviso-erro" role="alert">{erro}</p>}
       {ultimo && (
         <div className="aviso-ok" role="status">
-          <strong className="total-dados">{ultimo.total}</strong>
+          <span>Total da rolagem</span>
+          <strong className="total-dados" key={ultimo.id}>{ultimo.total}</strong>
           {ultimo.expr}: [{ultimo.dados.join(", ")}]
         </div>
       )}

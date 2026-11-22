@@ -235,7 +235,20 @@ textarea.campo { min-height: 5.5rem; resize: vertical; }
 .texto-perigo { color: var(--erro); }
 .dados-rapidos { gap: var(--esp-1); }
 .dados-rapidos .botao { min-width: 44px; padding-inline: .6rem; }
-.total-dados { display: block; font: bold 2rem/1.2 var(--titulo); }
+.total-dados {
+  display: block;
+  width: fit-content;
+  font: bold 2rem/1.2 var(--titulo);
+  font-variant-numeric: tabular-nums;
+}
+/* Entrada scale-in-center do Animista adaptada à leitura do resultado. */
+@media (prefers-reduced-motion: no-preference) {
+  .total-dados { animation: destacar-rolagem 180ms var(--ease-out-3); }
+}
+@keyframes destacar-rolagem {
+  from { transform: scale(.88); }
+  to { transform: scale(1); }
+}
 .historico-dados, .lista-ataques { padding-inline-start: 1.5rem; }
 .historico-dados { color: var(--suave); }
 .previa-sala {
