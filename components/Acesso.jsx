@@ -19,25 +19,23 @@ export default function Acesso({ onEntrar }) {
   }
 
   return (
-    <form onSubmit={enviar} style={{ maxWidth: 360 }}>
-      <label htmlFor="codigo-mestre">Código do mestre</label>
-      <br />
-      <input
-        id="codigo-mestre"
-        type="password"
-        value={codigo}
-        onChange={(e) => setCodigo(e.target.value)}
-        required
-        style={{ width: "100%", boxSizing: "border-box", padding: 6 }}
-      />
-      <button type="submit" disabled={enviando || !codigo} style={{ marginTop: 8 }}>
+    <form className="cartao pilha" onSubmit={enviar}>
+      <div>
+        <label className="rotulo" htmlFor="codigo-mestre">Código do mestre</label>
+        <input
+          className="campo"
+          id="codigo-mestre"
+          type="password"
+          autoComplete="current-password"
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+          required
+        />
+      </div>
+      <button className="botao botao-primario" type="submit" disabled={enviando || !codigo}>
         {enviando ? "Entrando..." : "Entrar"}
       </button>
-      {erro && (
-        <p role="alert" style={{ color: "#A32D2D" }}>
-          {erro}
-        </p>
-      )}
+      {erro && <p className="aviso-erro" role="alert">{erro}</p>}
     </form>
   );
 }

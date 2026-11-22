@@ -177,3 +177,56 @@ textarea.campo { min-height: 5.5rem; resize: vertical; }
     scroll-behavior: auto !important;
   }
 }
+
+.pagina-acesso { max-width: 30rem; }
+.mesa {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(19rem, 1fr);
+  align-items: start;
+  gap: var(--esp-4);
+}
+.mesa > * { min-width: 0; }
+.area-mapa {
+  min-width: 0;
+  max-width: 100%;
+  container-type: inline-size;
+  overflow: auto;
+}
+.campo-flex { flex: 1 1 10rem; }
+.campo-numero { width: 5rem; }
+.acoes-campos { align-items: end; }
+.acoes-campos .rotulo { margin: 0; }
+.rotulo .campo { margin-top: var(--esp-1); font-weight: normal; }
+.seletor-arquivo { position: relative; overflow: hidden; }
+.seletor-arquivo input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.seletor-arquivo:focus-within { outline: 3px solid var(--foco); outline-offset: 3px; }
+.rascunho { padding-top: var(--esp-3); border-top: 1px solid var(--linha); }
+.texto-perigo { color: var(--erro); }
+.dados-rapidos { gap: var(--esp-1); }
+.dados-rapidos .botao { min-width: 44px; padding-inline: .6rem; }
+.total-dados { display: block; font: bold 2rem/1.2 var(--titulo); }
+.historico-dados, .lista-ataques { padding-inline-start: 1.5rem; }
+.historico-dados { color: var(--suave); }
+.previa-sala {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--contorno);
+  border-radius: var(--raio);
+  animation: revelar-sala 180ms ease-out;
+}
+@keyframes revelar-sala { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 56rem) {
+  .mesa { grid-template-columns: minmax(0, 1fr); }
+}
