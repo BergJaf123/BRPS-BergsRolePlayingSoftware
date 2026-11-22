@@ -22,34 +22,32 @@ export default function ExcluirCampanha({ id, nome, onExcluida }) {
   }
 
   if (!aberto) {
-    return <button onClick={() => setAberto(true)}>Excluir</button>;
+    return <button className="botao botao-perigo" aria-label={`Excluir campanha ${nome}`} onClick={() => setAberto(true)}>Excluir</button>;
   }
 
   return (
-    <form onSubmit={confirmar} style={{ width: "100%" }}>
-      <label htmlFor={`cod-${id}`}>
-        Código do mestre para excluir &quot;{nome}&quot; (isso apaga as salas e os tokens)
-      </label>
-      <br />
-      <input
-        id={`cod-${id}`}
-        type="password"
-        value={codigo}
-        onChange={(e) => setCodigo(e.target.value)}
-        required
-        style={{ padding: 6 }}
-      />{" "}
-      <button type="submit" disabled={enviando || !codigo}>
-        {enviando ? "Excluindo..." : "Confirmar exclusão"}
-      </button>{" "}
-      <button type="button" onClick={() => setAberto(false)}>
-        Cancelar
-      </button>
-      {erro && (
-        <p role="alert" style={{ color: "#A32D2D", margin: "4px 0 0" }}>
-          {erro}
-        </p>
-      )}
+    <form className="confirmacao pilha" onSubmit={confirmar}>
+      <div>
+        <label className="rotulo" htmlFor={`cod-${id}`}>
+          Código do mestre para excluir &quot;{nome}&quot; (isso apaga as salas e os tokens)
+        </label>
+        <input
+          className="campo"
+          id={`cod-${id}`}
+          type="password"
+          autoComplete="current-password"
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+          required
+        />
+      </div>
+      <div className="acoes">
+        <button className="botao botao-perigo" type="submit" disabled={enviando || !codigo}>
+          {enviando ? "Excluindo..." : "Confirmar exclusão"}
+        </button>
+        <button className="botao" type="button" onClick={() => setAberto(false)}>Cancelar</button>
+      </div>
+      {erro && <p className="aviso-erro" role="alert">{erro}</p>}
     </form>
   );
 }

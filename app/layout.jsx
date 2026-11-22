@@ -1,9 +1,11 @@
+import './globals.css';
+
 export const metadata = { title: 'BRPS' };
 
 export default function Layout({ children }) {
   return (
     <html lang="pt-BR">
-      <body style={{ margin: 0, fontFamily: 'sans-serif', padding: 16 }}>
+      <body>
         {children}
       </body>
     </html>
