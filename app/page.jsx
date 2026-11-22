@@ -59,7 +59,6 @@ export default function Home() {
           <h1>BRPS</h1>
           <p className="texto-suave">Mesa virtual de RPG com IA para o mestre.</p>
         </div>
-        <Link className="botao" href="/tela">Tela dos jogadores</Link>
       </header>
 
       <div className="paineis-campanhas">
@@ -87,7 +86,20 @@ export default function Home() {
                     </small>
                   </div>
                   <div className="acoes">
-                    <Link className="botao" href={`/mestre?campanha=${c.id}`} aria-label={`Abrir campanha ${c.nome}`}>Abrir</Link>
+                    <Link
+                      className="botao botao-primario"
+                      href={`/tela?campanha=${c.id}`}
+                      aria-label={`Entrar como jogador na campanha ${c.nome}`}
+                    >
+                      Entrar como jogador
+                    </Link>
+                    <Link
+                      className="botao"
+                      href={`/mestre?campanha=${c.id}`}
+                      aria-label={`Painel do mestre da campanha ${c.nome}`}
+                    >
+                      Painel do mestre
+                    </Link>
                     <ExcluirCampanha id={c.id} nome={c.nome} onExcluida={carregar} />
                   </div>
                 </li>
