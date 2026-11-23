@@ -1,8 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ExcluirCampanha from "../components/ExcluirCampanha";
 import "./inicio.css";
+
+function normalizarBusca(texto) {
+  return texto.trim().toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
+}
 
 export default function Home() {
   const [campanhas, setCampanhas] = useState(null);
@@ -12,6 +16,12 @@ export default function Home() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
   const [ok, setOk] = useState("");
+  const [busca, setBusca] = useState("");
+  const campoBusca = useRef(null);
+  const termo = normalizarBusca(busca);
+  const campanhasVisiveis = termo
+    ? campanhas?.filter((c) => normalizarBusca(c.nome).includes(termo)) ?? []
+    : campanhas ?? [];
 
   async function carregar() {
     try {
@@ -84,11 +94,28 @@ export default function Home() {
           <div className="titulo-arquivo">
             <h2 id="titulo-lista" tabIndex={-1}>Campanhas disponíveis</h2>
             {campanhas?.length > 0 && !erroLista && (
-              <span className="quantidade-campanhas" aria-hidden="true">
-                {campanhas.length}
+              <span className="quantidade-campanhas" role="status" aria-atomic="true">
+                {termo ? `${campanhasVisiveis.length} de ${campanhas.length}` : campanhas.length}
               </span>
             )}
           </div>
+          {campanhas?.length > 0 && !erroLista && (
+            <div role="search" aria-label="Campanhas">
+              <label className="rotulo" htmlFor="busca-campanhas">Buscar campanha</label>
+              <div className="barra-busca-campanhas">
+                <input className="campo" type="search" id="busca-campanhas" ref={campoBusca}
+                  placeholder="Digite parte do nome" value={busca}
+                  onChange={(e) => setBusca(e.target.value)} />
+                <button className="botao" type="button" disabled={!busca}
+                  aria-label="Limpar busca" onClick={() => {
+                    setBusca("");
+                    campoBusca.current.focus();
+                  }}>
+                  Limpar
+                </button>
+              </div>
+            </div>
+          )}
           {campanhas === null && <p className="aviso" role="status">Carregando campanhas...</p>}
           {erroLista && (
             <div className="aviso-erro" role="alert">
@@ -103,9 +130,12 @@ export default function Home() {
               <a className="botao" href="#titulo-nova">Criar a primeira campanha</a>
             </div>
           )}
-          {campanhas && campanhas.length > 0 && (
+          {campanhas?.length > 0 && campanhasVisiveis.length === 0 && (
+            <p className="aviso">Nenhuma campanha encontrada. Tente outro nome ou limpe a busca.</p>
+          )}
+          {campanhasVisiveis.length > 0 && (
             <ul className="lista-campanhas">
-              {campanhas.map((c) => (
+              {campanhasVisiveis.map((c) => (
                 <li key={c.id} className="item-campanha">
                   <div className="resumo-campanha">
                     <span className="livro-campanha" aria-hidden="true" />
