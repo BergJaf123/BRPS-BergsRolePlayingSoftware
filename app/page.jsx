@@ -52,7 +52,7 @@ export default function Home() {
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.erro || "Erro ao criar a campanha");
-      setOk(`Campanha "${d.nome}" criada.`);
+      setOk(d);
       setNome("");
       setCodigo("");
       await carregar();
@@ -185,14 +185,19 @@ export default function Home() {
                 value={codigo} onChange={(e) => setCodigo(e.target.value)}
                 minLength={4} maxLength={40} required aria-describedby="ajuda-codigo"
               />
-              <small id="ajuda-codigo">Use de 4 a 40 caracteres. Guarde o código para acessar o painel do mestre. Ele não pode ser recuperado.</small>
+              <small id="ajuda-codigo">Use de 4 a 40 caracteres e guarde seu código. Vincular um e-mail no painel do mestre é opcional.</small>
             </div>
             <button className="botao botao-primario" type="submit" disabled={enviando}>
               {enviando ? "Criando..." : "Criar campanha"}
             </button>
           </form>
           {erro && <p className="aviso-erro" role="alert">{erro}</p>}
-          {ok && <p className="aviso-ok" role="status">{ok}</p>}
+          {ok && (
+            <div className="aviso-ok pilha" role="status">
+              <p>Campanha &ldquo;{ok.nome}&rdquo; criada.</p>
+              <Link className="botao" href={`/mestre?campanha=${ok.id}`}>Abrir painel do mestre</Link>
+            </div>
+          )}
         </section>
       </div>
     </main>

@@ -17,6 +17,12 @@ O BRPS é uma mesa virtual de RPG para o mestre preparar encontros e conduzir um
 
 A página inicial permite buscar campanhas pelo nome. O painel também oferece rolagem de dados, criação manual de personagens e geração de mapas por descrição.
 
+### Recuperar o acesso pelo e-mail
+
+O e-mail é opcional. A criação de campanhas, a entrada com o código do mestre e a tela dos jogadores funcionam sem cadastro de e-mail. Para ativar a recuperação em uma campanha nova ou antiga, entre com o código atual, abra **Vincular e-mail (opcional)** e confirme o número enviado à sua caixa de entrada.
+
+Se esquecer o código depois de vincular o endereço, abra **Painel do mestre → Entrar com e-mail (opcional)**. Somente depois de confirmar a verificação recebida aparece **Recuperar código do mestre**. Escolha o novo código, confirme e use-o para entrar. Cada verificação vale por até dez minutos e permite cinco tentativas. Após um minuto é possível pedir outra. A sessão por e-mail vale apenas para essa campanha por até dez minutos e termina ao redefinir o código ou sair.
+
 ## Executar localmente
 
 Use Node.js compatível com o Next.js 14 (mínimo 18.17), npm e um banco PostgreSQL com conexão SSL. O projeto usa PostgreSQL hospedado no Supabase.
@@ -29,17 +35,25 @@ Use Node.js compatível com o Next.js 14 (mínimo 18.17), npm e um banco Postgre
    npm ci
    ```
 
-2. Em um banco vazio, execute uma vez cada, na ordem indicada — [criação das tabelas](sql/schema.sql), [migração da imagem da sala](sql/002_sala_imagem.sql) e [índice de tokens](sql/indices.sql). No Supabase, use o SQL Editor.
+2. Em um banco vazio, execute uma vez cada, na ordem indicada — [criação das tabelas](sql/schema.sql), [migração da imagem da sala](sql/002_sala_imagem.sql), [migração da recuperação por e-mail](sql/003_recuperacao_email.sql) e [índice de tokens](sql/indices.sql). Em uma instalação existente com as demais etapas aplicadas, execute apenas a nova migração de recuperação. No Supabase, use o SQL Editor.
 3. Configure as variáveis no ambiente do servidor. Localmente, o Next.js também as aceita em `.env.local`, na raiz do projeto. Na Vercel, configure-as no ambiente de produção e faça um novo deploy para aplicar mudanças.
 
    | Variável | Finalidade |
    | --- | --- |
    | `DATABASE_URL` | Conexão PostgreSQL usada pelas rotas da API para consultar e salvar campanhas. |
    | `GROQ_API_KEY` | Chave do provedor para gerar NPCs e mapas reais. Sem ela, as rotas devolvem exemplos identificados como **Modo simulado**. |
+   | `SUPABASE_URL` | URL HTTPS do projeto Supabase que enviará os e-mails de verificação. |
+   | `SUPABASE_PUBLISHABLE_KEY` | Chave publicável desse projeto, usada pela rota de recuperação. Use a chave publicável, sem privilégios administrativos. |
 
    Mantenha os valores privados no servidor, fora do Git e sem o prefixo `NEXT_PUBLIC_`.
 
 4. Inicie o projeto com `npm run dev` e abra [localhost:3000](http://localhost:3000). Para conferir a conexão, abra [a rota de saúde](http://localhost:3000/api/saude). Com o banco preparado, ela responde com `ok: true` e a quantidade de campanhas. Para testar a versão de produção localmente, execute `npm run build` e depois `npm start`.
+
+### Configurar o envio de e-mail
+
+No Supabase Auth, habilite o provedor **Email**, a confirmação de e-mail e o cadastro de novos usuários para que o primeiro vínculo funcione. Nos modelos **Confirm signup** e **Magic Link**, inclua o código de uso único no corpo da mensagem, por exemplo `<p>Seu código de verificação do BRPS é {{ .Token }}.</p>`. Configure a expiração do código para 600 segundos. O usuário digita esse número no próprio BRPS. [Guia de códigos por e-mail do Supabase](https://supabase.com/docs/guides/auth/auth-email-passwordless)
+
+O serviço padrão de testes do Supabase só envia para endereços da equipe do projeto. Para atender aos mestres em produção, configure um remetente e um serviço SMTP próprio em **Authentication → SMTP Settings**. Depois, teste o cadastro do e-mail e a troca do código em uma campanha de teste. [Guia de SMTP em produção](https://supabase.com/docs/guides/auth/auth-smtp)
 
 ## Como os dados circulam
 
@@ -49,6 +63,7 @@ As três telas usam **React, Next.js 14 (App Router) e JavaScript**. O Zustand m
 | --- | --- |
 | `GET /api/campanhas` e `POST /api/campanhas` | Listar campanhas com a contagem de salas ou criar uma campanha com sua primeira sala. |
 | `POST /api/campanhas/[id]/mestre` e `PUT /api/campanhas/[id]/mestre` | Conferir o código e abrir ou salvar o estado da mesa. |
+| `/api/campanhas/[id]/recuperacao` | POST e PUT solicitam e confirmam o código enviado por e-mail. GET consulta a sessão, PATCH redefine o código do mestre mediante sessão válida e DELETE encerra a sessão. |
 | `GET /api/campanhas/[id]/estado` | Entregar o mapa e os dados públicos. A tela dos jogadores agenda uma nova consulta dois segundos depois de terminar a anterior. |
 | `DELETE /api/campanhas/[id]` | Excluir a campanha após verificar o código. A exclusão remove também suas salas e tokens. |
 | `POST /api/gerar-npc` e `POST /api/gerar-mapa` | Enviar a descrição à Groq e devolver um rascunho para revisão no painel. |

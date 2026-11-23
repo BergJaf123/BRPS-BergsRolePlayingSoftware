@@ -7,6 +7,7 @@ import Dados from "../../components/Dados";
 import PainelMapa from "../../components/PainelMapa";
 import PainelSala from "../../components/PainelSala";
 import Acesso from "../../components/Acesso";
+import RecuperacaoEmail from "../../components/RecuperacaoEmail";
 import { useJogo } from "../../lib/store";
 import { abrirCampanha, salvarCampanha } from "../../lib/api";
 import { lerImagem } from "../../lib/imagem";
@@ -122,7 +123,10 @@ export default function Mestre() {
         {campanha === "" ? (
           <p className="aviso">Nenhuma campanha escolhida.</p>
         ) : (
-          <Acesso onEntrar={entrar} />
+          <>
+            <Acesso onEntrar={entrar} />
+            <RecuperacaoEmail campanha={campanha} />
+          </>
         )}
         <Link className="botao" href="/">Voltar para as campanhas</Link>
       </main>
@@ -233,6 +237,7 @@ export default function Mestre() {
         <div className="pilha">
           <PainelMapa mapa={mapa} onAplicar={definirMapa} />
           <PainelSala sala={sala} onChange={definirSala} />
+          <RecuperacaoEmail campanha={campanha} codigoMestre={codigo} />
           <Dados />
 
           <section className="cartao pilha" aria-labelledby="titulo-personagem">
