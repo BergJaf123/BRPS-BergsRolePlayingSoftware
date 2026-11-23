@@ -1,4 +1,11 @@
 .inicio {
+  /* Areia, âmbar e menta da paleta Open Props. */
+  --texto: #e6e4dc;
+  --ouro: #ffc078;
+  --ouro-hover: #ffd8a8;
+  --foco: #96f2d7;
+  --tinta: #152627;
+  color: var(--texto);
   max-width: 76rem;
   margin: 0 auto;
   padding: 0 clamp(0rem, 2vw, 2rem) var(--esp-5);
@@ -64,7 +71,6 @@
 .chamada-inicio h1 em { display: block; color: var(--ouro); }
 .chamada-inicio p {
   margin-block: 1.1rem 1.35rem;
-  color: #e7e9d9;
 }
 .inicio .atalho-lista { gap: 1rem; }
 .atalho-lista span { transition: transform 180ms var(--ease-out-3); }
