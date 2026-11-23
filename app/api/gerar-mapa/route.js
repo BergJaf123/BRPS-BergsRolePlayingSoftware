@@ -47,8 +47,9 @@ function validar(b) {
 }
 
 export async function POST(req) {
-  const { pedido } = await req.json();
-  if (!pedido || typeof pedido !== "string" || pedido.length > 300) {
+  const corpo = await req.json().catch(() => null);
+  const pedido = typeof corpo?.pedido === "string" ? corpo.pedido.trim() : "";
+  if (!pedido || pedido.length > 300) {
     return NextResponse.json({ error: "Pedido inválido" }, { status: 400 });
   }
 
@@ -66,6 +67,7 @@ Adapte esse raciocínio ao formato pedido (L, L invertido, T, U, corredor, cruz 
   try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(15000),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${chave}`,
@@ -80,9 +82,9 @@ Adapte esse raciocínio ao formato pedido (L, L invertido, T, U, corredor, cruz 
         ],
       }),
     });
+    if (!r.ok) throw new Error(`Groq respondeu com status ${r.status}`);
     const dados = await r.json();
     const texto = dados.choices?.[0]?.message?.content ?? "";
-    console.log("MAPA DA IA:", texto.slice(0, 700));
     const bruto = JSON.parse(texto.slice(texto.indexOf("{"), texto.lastIndexOf("}") + 1));
     return NextResponse.json({ mapa: validar(bruto) });
   } catch (e) {

@@ -32,8 +32,9 @@ function validar(bruto) {
 }
 
 export async function POST(req) {
-  const { pedido } = await req.json();
-  if (!pedido || typeof pedido !== "string" || pedido.length > 300) {
+  const corpo = await req.json().catch(() => null);
+  const pedido = typeof corpo?.pedido === "string" ? corpo.pedido.trim() : "";
+  if (!pedido || pedido.length > 300) {
     return NextResponse.json({ error: "Pedido inválido" }, { status: 400 });
   }
 
@@ -45,6 +46,7 @@ export async function POST(req) {
   try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(15000),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${chave}`,
@@ -63,8 +65,8 @@ export async function POST(req) {
         ],
       }),
     });
+    if (!r.ok) throw new Error(`Groq respondeu com status ${r.status}`);
     const dados = await r.json();
-    console.log("STATUS GROQ:", r.status, JSON.stringify(dados).slice(0, 800));
     const texto = dados.choices?.[0]?.message?.content ?? "";
     const ini = texto.indexOf("{");
     const fim = texto.lastIndexOf("}");
