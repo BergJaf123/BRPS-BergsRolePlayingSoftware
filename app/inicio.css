@@ -80,6 +80,11 @@
   margin-top: var(--size-fluid-3);
 }
 .arquivo-campanhas { min-width: 0; }
+.barra-busca-campanhas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .5rem;
+}
 .titulo-arquivo { gap: .65rem; margin-block: .35rem .4rem; }
 .inicio h2 {
   font-weight: 400;
