@@ -12,7 +12,7 @@ import { lerImagem } from "../../lib/imagem";
 
 export default function Mestre() {
   const {
-    tokens, mapa, mover, alternarRevelado, adicionar, ajustarHp,
+    tokens, mapa, mover, alternarRevelado, adicionar, remover, ajustarHp,
     definirEstado, definirImagem, definirMapa, sala, definirSala,
   } = useJogo();
   const [campanha, setCampanha] = useState(null);
@@ -102,6 +102,36 @@ export default function Mestre() {
   const campo = (k) => (e) => setRascunho({ ...rascunho, [k]: e.target.value });
   const token = tokens.find((t) => t.id === sel);
 
+  function excluirToken() {
+    if (!token) return;
+
+    if (window.confirm(`Deseja excluir ${token.nome}?`)) {
+      remover(token.id);
+      setSel(null);
+      setValor("");
+      setErroImg("");
+    }
+  }
+
+  useEffect(() => {
+    function aoPressionar(e) {
+      if (!codigo || !token || e.key !== "Delete" || e.repeat) return;
+      if (e.target.closest?.("input, textarea, select, [contenteditable]")) return;
+
+      e.preventDefault();
+
+      if (window.confirm(`Deseja excluir ${token.nome}?`)) {
+        remover(token.id);
+        setSel(null);
+        setValor("");
+        setErroImg("");
+      }
+    }
+
+    window.addEventListener("keydown", aoPressionar);
+    return () => window.removeEventListener("keydown", aoPressionar);
+  }, [codigo, token, remover]);
+
   if (campanha === null) return <p className="aviso" role="status">Carregando...</p>;
   if (campanha === "" || !codigo) {
     return (
@@ -153,6 +183,9 @@ export default function Mestre() {
             <div className="rascunho pilha">
               <h3>{token.nome}</h3>
               <div className="acoes">
+                <button className="botao botao-perigo" onClick={excluirToken}>
+                  Excluir token
+                </button>
                 <button className="botao" onClick={() => alternarRevelado(token.id)}>
                   {token.revelado ? "Ocultar" : "Revelar"} {token.nome}
                 </button>
