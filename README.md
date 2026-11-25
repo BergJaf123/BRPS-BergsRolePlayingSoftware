@@ -15,6 +15,8 @@ O BRPS é uma mesa virtual de RPG para o mestre preparar encontros e conduzir um
 3. Selecione o novo token (a peça que representa o personagem), clique em uma casa do chão e use **Revelar** quando ele entrar em cena. Aguarde **Salvo no banco** antes de recarregar.
 4. Em outra aba ou dispositivo, escolha **Entrar como jogador** na mesma campanha. Os jogadores veem os tokens revelados e a imagem da sala quando o mestre escolhe mostrá-la. Pontos de vida, classe de armadura, descrição e ataques ficam no painel do mestre.
 
+**Pelo teclado.** No painel do mestre, use Tab para entrar no tabuleiro. Percorra as casas com as setas e pressione Enter ou Espaço sobre uma peça para selecioná-la. Vá até uma casa livre e confirme com Enter ou Espaço para mover. Quando duas peças ocupam a mesma casa, cada confirmação seleciona a próxima. Tab segue para o próximo controle.
+
 A página inicial permite buscar campanhas pelo nome. O painel também oferece rolagem de dados, criação manual de personagens e geração de mapas por descrição.
 
 ### Recuperar o acesso pelo e-mail
@@ -91,4 +93,4 @@ Para repetir a comparação em um banco de teste com dados fictícios, execute o
 - **Visão do jogador.** Abra a mesma campanha em uma janela anônima. Oculte e revele o goblin pelo painel do mestre e confira a mudança na outra janela. Repita com a imagem da sala.
 - **Celular e erro.** Na largura de 375 px, confira a busca e o empilhamento dos painéis. Tente abrir o painel com um código incorreto e observe a mensagem de erro.
 
-**Limitação conhecida.** A seleção e a movimentação de tokens no tabuleiro do mestre ainda dependem de clique ou toque. [Pendência de navegação por teclado](docs/PENDENCIAS-FRONT.md)
+O teste de navegação do tabuleiro cobre seleção, movimento, paredes e a saída com Tab. [Passos para repetir o teste](docs/PENDENCIAS-FRONT.md)

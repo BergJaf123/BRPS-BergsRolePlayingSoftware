@@ -1,5 +1,9 @@
-# Pendências do front
+# Acessibilidade do tabuleiro
 
-## Operar o tabuleiro do mestre pelo teclado
+## Teste de seleção e movimento
 
-Em `components/Mapa.jsx`, a seleção de tokens e a escolha da casa de destino dependem de cliques. Para operar o tabuleiro pelo teclado, é preciso acrescentar navegação pelas casas, ativação da seleção e do movimento e indicação da posição e do token para leitores de tela. Essa mudança envolve eventos e gerenciamento de foco. O teste de aceitação é selecionar um token e movê-lo usando apenas o teclado, sem precisar tabular por todas as casas. A tela dos jogadores deve continuar somente leitura.
+1. Abra uma campanha no painel do mestre e adicione uma peça. Use Tab para entrar no tabuleiro. Uma única casa recebe o foco.
+2. Percorra as casas com as setas até a peça. A casa tem um nome acessível com a linha, a coluna e os nomes das peças presentes.
+3. Pressione Enter para selecionar a peça. Vá até uma casa livre e pressione Espaço. Confira a posição, aguarde **Salvo no banco** e recarregue o painel.
+4. Em um mapa com paredes, tente confirmar uma parede como destino. A peça deve continuar no chão. Tab e Shift+Tab permitem sair do tabuleiro em ambas as direções.
+5. Abra a tela dos jogadores. Uma peça revelada deve aparecer na mesma posição, em modo de leitura.

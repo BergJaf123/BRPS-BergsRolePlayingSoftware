@@ -153,7 +153,14 @@ export default function Mestre() {
               {status === "salvando" ? "Salvando..." : status === "salvo" ? "Salvo no banco" : status}
             </p>
           )}
-          <p className="texto-suave">Selecione um token e depois uma casa para movê-lo.</p>
+          <p className="texto-suave" id="ajuda-tabuleiro">
+            Selecione um token e depois uma casa livre para movê-lo. Pelo teclado, use Tab para
+            entrar no mapa e as setas para percorrer as casas. Enter ou Espaço seleciona
+            o token ou confirma o destino.
+          </p>
+          <span className="somente-leitor" role="status">
+            {token && `${token.nome} selecionado. Linha ${token.y + 1}, coluna ${token.x + 1}.`}
+          </span>
           <div className="area-mapa">
             <Mapa
               tokens={tokens}
