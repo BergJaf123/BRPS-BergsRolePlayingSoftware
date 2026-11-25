@@ -4,6 +4,12 @@ O BRPS é uma mesa virtual de RPG para o mestre preparar encontros e conduzir um
 
 **Projeto Integrador de Desenvolvimento Web para IA e Banco de Dados.** [Abrir o BRPS na Vercel](https://bergs-role-playing-software.vercel.app/)
 
+## Entrega acadêmica
+
+O [relatório técnico em PDF](docs/BRPS-relatorio-e-defesa-Bergman.pdf) reúne as evidências E1 a E6. Na página 2 estão o diagrama e o resultado de um `JOIN` real. A página 3 acompanha a personagem Lia desde a geração até a leitura após F5. A página 4 compara os planos antes e depois do índice. A última página traz o roteiro de nove minutos para a defesa individual.
+
+As capturas registram a versão testada em 24/11/2026. A navegação do tabuleiro pelo teclado, apontada como pendência naquele teste, foi implementada posteriormente nesta branch.
+
 ## Responsável pelo projeto
 
 **Bergman** — único integrante do projeto acadêmico. Seu papel é integrar as telas da mesa, a API, o banco de dados e a geração por IA. Na demonstração, apresenta o fluxo completo e explica como uma descrição vira um personagem, como sua posição fica salva e o que é compartilhado com os jogadores.
