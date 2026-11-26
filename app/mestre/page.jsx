@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { lerIdCampanha } from "../campanha-da-url";
 import Mapa from "../../components/Mapa";
 import Dados from "../../components/Dados";
 import PainelMapa from "../../components/PainelMapa";
 import PainelSala from "../../components/PainelSala";
 import Acesso from "../../components/Acesso";
+import RecuperacaoEmail from "../../components/RecuperacaoEmail";
 import { useJogo } from "../../lib/store";
 import { abrirCampanha, salvarCampanha } from "../../lib/api";
 import { lerImagem } from "../../lib/imagem";
@@ -28,10 +30,10 @@ export default function Mestre() {
   const [erroImg, setErroImg] = useState("");
   const [novoNome, setNovoNome] = useState("");
   const ultimo = useRef("");
+  const filaSalvamento = useRef(Promise.resolve());
 
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("campanha");
-    setCampanha(/^\d{1,15}$/.test(id ?? "") ? id : "");
+    setCampanha(lerIdCampanha(window.location.search));
   }, []);
 
   async function entrar(cod) {
@@ -45,18 +47,29 @@ export default function Mestre() {
   useEffect(() => {
     if (!codigo) return;
     const agora = JSON.stringify({ tokens, mapa, sala });
-    if (agora === ultimo.current) return;
-    setStatus("salvando");
-    const t = setTimeout(async () => {
-      try {
-        await salvarCampanha(campanha, codigo, { tokens, mapa, sala });
-        ultimo.current = agora;
-        setStatus("salvo");
-      } catch (e) {
-        setStatus("Erro ao salvar: " + e.message);
-      }
+    let ativo = true;
+    const t = setTimeout(() => {
+      filaSalvamento.current = filaSalvamento.current.then(async () => {
+        if (!ativo) return;
+        if (agora === ultimo.current) {
+          setStatus((atual) => atual ? "salvo" : "");
+          return;
+        }
+
+        setStatus("salvando");
+        try {
+          await salvarCampanha(campanha, codigo, { tokens, mapa, sala });
+          ultimo.current = agora;
+          if (ativo) setStatus("salvo");
+        } catch (e) {
+          if (ativo) setStatus("Erro ao salvar: " + e.message);
+        }
+      });
     }, 800);
-    return () => clearTimeout(t);
+    return () => {
+      ativo = false;
+      clearTimeout(t);
+    };
   }, [tokens, mapa, sala, codigo, campanha]);
 
   async function gerar() {
@@ -140,7 +153,10 @@ export default function Mestre() {
         {campanha === "" ? (
           <p className="aviso">Nenhuma campanha escolhida.</p>
         ) : (
-          <Acesso onEntrar={entrar} />
+          <>
+            <Acesso onEntrar={entrar} />
+            <RecuperacaoEmail campanha={campanha} />
+          </>
         )}
         <Link className="botao" href="/">Voltar para as campanhas</Link>
       </main>
@@ -167,7 +183,14 @@ export default function Mestre() {
               {status === "salvando" ? "Salvando..." : status === "salvo" ? "Salvo no banco" : status}
             </p>
           )}
-          <p className="texto-suave">Selecione um token e depois uma casa para movê-lo.</p>
+          <p className="texto-suave" id="ajuda-tabuleiro">
+            Selecione um token e depois uma casa livre para movê-lo. Pelo teclado, use Tab para
+            entrar no mapa e as setas para percorrer as casas. Enter ou Espaço seleciona
+            o token ou confirma o destino.
+          </p>
+          <span className="somente-leitor" role="status">
+            {token && `${token.nome} selecionado. Linha ${token.y + 1}, coluna ${token.x + 1}.`}
+          </span>
           <div className="area-mapa">
             <Mapa
               tokens={tokens}
@@ -254,6 +277,7 @@ export default function Mestre() {
         <div className="pilha">
           <PainelMapa mapa={mapa} onAplicar={definirMapa} />
           <PainelSala sala={sala} onChange={definirSala} />
+          <RecuperacaoEmail campanha={campanha} codigoMestre={codigo} />
           <Dados />
 
           <section className="cartao pilha" aria-labelledby="titulo-personagem">

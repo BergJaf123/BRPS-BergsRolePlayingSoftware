@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { lerIdCampanha } from "../campanha-da-url";
 import Mapa from "../../components/Mapa";
 import { lerEstadoPublico } from "../../lib/api";
 
@@ -31,13 +32,13 @@ export default function Tela() {
   const janela = useJanela();
 
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("campanha");
-    setCampanha(/^\d{1,15}$/.test(id ?? "") ? id : "");
+    setCampanha(lerIdCampanha(window.location.search));
   }, []);
 
   useEffect(() => {
     if (!campanha) return;
     let vivo = true;
+    let t;
     async function buscar() {
       try {
         const d = await lerEstadoPublico(campanha);
@@ -47,13 +48,14 @@ export default function Tela() {
         }
       } catch (e) {
         if (vivo) setErro(e.message);
+      } finally {
+        if (vivo) t = setTimeout(buscar, 2000);
       }
     }
     buscar();
-    const t = setInterval(buscar, 2000);
     return () => {
       vivo = false;
-      clearInterval(t);
+      clearTimeout(t);
     };
   }, [campanha]);
 
