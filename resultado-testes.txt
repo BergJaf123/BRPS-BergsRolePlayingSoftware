@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: Mapa: identifica chão
+ok 1 - Mapa: identifica chão
+  ---
+  duration_ms: 1.324124
+  type: 'test'
+  ...
+# Subtest: Mapa: identifica espaço vazio
+ok 2 - Mapa: identifica espaço vazio
+  ---
+  duration_ms: 0.13917
+  type: 'test'
+  ...
+# Subtest: Mapa: rejeita coordenada externa com máscara
+ok 3 - Mapa: rejeita coordenada externa com máscara
+  ---
+  duration_ms: 0.213381
+  type: 'test'
+  ...
+# Subtest: Mapa: sem máscara permite chão
+ok 4 - Mapa: sem máscara permite chão
+  ---
+  duration_ms: 0.146832
+  type: 'test'
+  ...
+# Subtest: Token: mantém posição válida
+ok 5 - Token: mantém posição válida
+  ---
+  duration_ms: 0.999064
+  type: 'test'
+  ...
+# Subtest: Token: reposiciona peça fora do mapa
+ok 6 - Token: reposiciona peça fora do mapa
+  ---
+  duration_ms: 0.223486
+  type: 'test'
+  ...
+# Subtest: Token: reposiciona peça em espaço vazio
+ok 7 - Token: reposiciona peça em espaço vazio
+  ---
+  duration_ms: 1.270232
+  type: 'test'
+  ...
+# Subtest: Token: evita casa ocupada quando há espaço
+ok 8 - Token: evita casa ocupada quando há espaço
+  ---
+  duration_ms: 0.188363
+  type: 'test'
+  ...
+# Subtest: Segurança: aceita código correto
+ok 9 - Segurança: aceita código correto
+  ---
+  duration_ms: 124.842631
+  type: 'test'
+  ...
+# Subtest: Segurança: rejeita código incorreto
+ok 10 - Segurança: rejeita código incorreto
+  ---
+  duration_ms: 75.529585
+  type: 'test'
+  ...
+# Subtest: Segurança: hashes do mesmo código têm sais distintos
+ok 11 - Segurança: hashes do mesmo código têm sais distintos
+  ---
+  duration_ms: 87.903146
+  type: 'test'
+  ...
+# Subtest: Segurança: rejeita hash malformado
+ok 12 - Segurança: rejeita hash malformado
+  ---
+  duration_ms: 0.164117
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 411.453908
